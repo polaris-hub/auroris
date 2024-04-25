@@ -20,6 +20,9 @@ OutlierDetectionMethod: TypeAlias = Literal["iso", "lof", "svm", "ee", "zscore"]
 def detect_outliers(X: np.ndarray, method: OutlierDetectionMethod, **kwargs):
     """"""
 
+    if X.ndim != 1:
+        raise ValueError("X must be a 1D array for outlier detection.")
+
     detector_cls = _OUTLIER_METHODS[method]
     detector = detector_cls(**kwargs)
     indices = np.flatnonzero(~np.isnan(X))
@@ -29,7 +32,9 @@ def detect_outliers(X: np.ndarray, method: OutlierDetectionMethod, **kwargs):
 
     is_inlier = np.zeros_like(X, dtype=int)
     is_inlier[indices] = out_.flatten()
-    return is_inlier
+
+    is_outlier = 1 - ((is_inlier + 1) / 2)
+    return is_outlier
 
 
 def modified_zscore(data: np.ndarray, consistency_correction: float = 1.4826):
@@ -129,8 +134,8 @@ class OutlierDetection(BaseAction):
     ):
         for column in self.columns:
             values = dataset[column].values
-            is_inlier = detect_outliers(values, self.method, **self.kwargs)
-            dataset[self.get_column_name(column)] = is_inlier
+            is_outlier = detect_outliers(values, self.method, **self.kwargs)
+            dataset[self.get_column_name(column)] = is_outlier
 
         return dataset
 

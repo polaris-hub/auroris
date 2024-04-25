@@ -1,6 +1,9 @@
+import numpy as np
+import pandas as pd
 import pytest
 
 from alchemy.curation.actions import OutlierDetection
+from alchemy.curation.functional import detect_outliers
 
 
 @pytest.mark.parametrize("method", ["iso", "lof", "svm", "ee", "zscore"])
@@ -10,7 +13,7 @@ def test_outlier_detection(method, dataset):
     df = action.transform(dataset)
     assert f"{action.prefix}outlier_column" in df.columns
 
-    outliers = df[df[f"{action.prefix}outlier_column"] == -1]
+    outliers = df[df[f"{action.prefix}outlier_column"] == 1]
 
     # It's hard to conceive a toy example that works for all methods
     # This is not the goal of this test case. Except for the z-score (which we tested separately)
@@ -34,8 +37,16 @@ def test_zscore_outlier_detection(use_modified_zscore, dataset):
     df = action.transform(dataset)
     assert f"{action.prefix}outlier_column" in df.columns
 
-    outliers = df[df[f"{action.prefix}outlier_column"] == -1]
+    outliers = df[df[f"{action.prefix}outlier_column"] == 1]
 
     assert len(outliers) == 2
     assert 0 in outliers.index
     assert (len(dataset) - 1) in outliers.index
+
+
+def test_check_outlier_zscore():
+    data = pd.DataFrame(np.random.normal(0, 0.1, size=100), columns=["data_col"])
+    num_outlier = 5
+    data.loc[: num_outlier - 1, "data_col"] = 10
+    is_outlier = detect_outliers(X=data["data_col"].values, method="zscore")
+    assert is_outlier.sum() == num_outlier

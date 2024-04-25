@@ -1,5 +1,6 @@
 import datamol as dm
 
+from alchemy.curation.actions._mol import _num_stereo_centers
 from alchemy.curation.functional import curate_molecules
 
 
@@ -37,3 +38,33 @@ def test_run_chemistry_curation():
     for smiles in mol_dict["smiles"]:
         mol = dm.to_mol(smiles)
         assert dm.same_mol(dm.remove_salts_solvents(mol), mol)
+
+
+def test_num_undefined_stereo_centers():
+    # mol with no stereo centers
+    mol = dm.to_mol("CCCC")
+    num_all, num_defined, num_undefined = _num_stereo_centers(mol)
+    assert num_all == 0
+    assert num_defined == 0
+    assert num_undefined == 0
+
+    # mol with all defined centers
+    mol = dm.to_mol("C1C[C@H](C)[C@H](C)[C@H](C)C1")
+    num_all, num_defined, num_undefined = _num_stereo_centers(mol)
+    assert num_all == 3
+    assert num_defined == 3
+    assert num_undefined == 0
+
+    # mol with partial defined centers
+    mol = dm.to_mol("C[C@H](F)C(F)(Cl)Br")
+    num_all, num_defined, num_undefined = _num_stereo_centers(mol)
+    assert num_all == 2
+    assert num_defined == 1
+    assert num_undefined == 1
+
+    # mol with no defined centers
+    mol = dm.to_mol("CC(F)C(F)(Cl)Br")
+    num_all, num_defined, num_undefined = _num_stereo_centers(mol)
+    assert num_all == 2
+    assert num_defined == 0
+    assert num_undefined == 2
