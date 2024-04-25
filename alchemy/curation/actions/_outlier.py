@@ -1,4 +1,4 @@
-from typing import Dict, List, Literal, Optional
+from typing import Dict, List, Literal, Optional, TypeAlias
 
 import numpy as np
 import pandas as pd
@@ -13,6 +13,48 @@ from sklearn.svm import OneClassSVM
 from alchemy.curation.actions._base import BaseAction
 from alchemy.report import CurationReport
 from alchemy.types import VerbosityLevel
+
+OutlierDetectionMethod: TypeAlias = Literal["iso", "lof", "svm", "ee", "zscore"]
+
+
+def detect_outliers(X: np.ndarray, method: OutlierDetectionMethod, **kwargs):
+    """"""
+
+    detector_cls = _OUTLIER_METHODS[method]
+    detector = detector_cls(**kwargs)
+    indices = np.flatnonzero(~np.isnan(X))
+
+    in_ = X[indices].reshape(-1, 1)
+    out_ = detector.fit_predict(in_)
+
+    is_inlier = np.zeros_like(X, dtype=int)
+    is_inlier[indices] = out_.flatten()
+    return is_inlier
+
+
+class OutlierDetection(BaseAction):
+    """
+    Automatic detection of outliers.
+    """
+
+    method: OutlierDetectionMethod
+    columns: List[str]
+    prefix: str = "OUTLIER_"
+    kwargs: Dict = Field(default_factory=dict)
+
+    def transform(
+        self,
+        dataset: pd.DataFrame,
+        report: Optional[CurationReport] = None,
+        verbosity: VerbosityLevel = VerbosityLevel.NORMAL,
+        parallelized_kwargs: Optional[Dict] = None,
+    ):
+        for column in self.columns:
+            values = dataset[column].values
+            is_inlier = detect_outliers(values, self.method, **self.kwargs)
+            dataset[self.get_column_name(column)] = is_inlier
+
+        return dataset
 
 
 def modified_zscore(data: np.ndarray, consistency_correction: float = 1.4826):
@@ -93,42 +135,7 @@ class ZscoreOutlier(OutlierMixin):
         return self.predict(X)
 
 
-class OutlierDetection(BaseAction):
-    """
-    Automatic detection of outliers.
-    """
-
-    method: Literal["iso", "lof", "svm", "ee", "zscore"]
-    columns: List[str]
-    prefix: str = "OUTLIER_"
-    kwargs: Dict = Field(default_factory=dict)
-
-    def run(
-        self,
-        dataset: pd.DataFrame,
-        report: Optional[CurationReport] = None,
-        verbosity: VerbosityLevel = VerbosityLevel.NORMAL,
-        parallelized_kwargs: Optional[Dict] = None,
-    ):
-        detector_cls = _OUTLIER_METHODS[self.method]
-        detector = detector_cls(**self.kwargs)
-
-        for column in self.columns:
-            values = dataset[column].values
-            indices = np.flatnonzero(~np.isnan(values))
-
-            in_ = values[indices].reshape(-1, 1)
-            out_ = detector.fit_predict(in_)
-
-            is_inlier = np.zeros_like(values, dtype=int)
-            is_inlier[indices] = out_.flatten()
-
-            dataset[self.get_column_name(column)] = is_inlier
-
-        return dataset
-
-
-_OUTLIER_METHODS = {
+_OUTLIER_METHODS: Dict[OutlierDetectionMethod, OutlierMixin] = {
     "iso": IsolationForest,
     "lof": LocalOutlierFactor,
     "svm": OneClassSVM,

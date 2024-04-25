@@ -39,7 +39,7 @@ class BaseAction(BaseModel, abc.ABC):
         return f"{self.prefix}{column}"
 
     @abc.abstractmethod
-    def run(
+    def transform(
         self,
         dataset: pd.DataFrame,
         report: Optional["CurationReport"] = None,
@@ -49,7 +49,7 @@ class BaseAction(BaseModel, abc.ABC):
         raise NotImplementedError
 
     def __call__(self, dataset: pd.DataFrame):
-        return self.run(dataset)
+        return self.transform(dataset)
 
     def __init_subclass__(cls, **kwargs):
         super().__init_subclass__(**kwargs)

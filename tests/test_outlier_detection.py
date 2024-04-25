@@ -7,7 +7,7 @@ from alchemy.curation.actions import OutlierDetection
 def test_outlier_detection(method, dataset):
     action = OutlierDetection(method=method, columns=["outlier_column"])
 
-    df = action.run(dataset)
+    df = action.transform(dataset)
     assert f"{action.prefix}outlier_column" in df.columns
 
     outliers = df[df[f"{action.prefix}outlier_column"] == -1]
@@ -31,7 +31,7 @@ def test_zscore_outlier_detection(use_modified_zscore, dataset):
         },
     )
 
-    df = action.run(dataset)
+    df = action.transform(dataset)
     assert f"{action.prefix}outlier_column" in df.columns
 
     outliers = df[df[f"{action.prefix}outlier_column"] == -1]

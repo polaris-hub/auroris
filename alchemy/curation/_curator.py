@@ -17,11 +17,11 @@ class Curator(BaseModel):
     Can be serialized.
     """
 
-    # This feels hacky, but to know which Action object to create, we need a discriminated union.
+    # To know which Action object to create, we need a discriminated union.
     # This is the recommended way to add all subclasses in the type.
     # See e.g. https://github.com/pydantic/pydantic/issues/2200
     # and https://github.com/pydantic/pydantic/issues/2036
-    actions: List[Union[tuple(ACTION_REGISTRY)]] = Field(..., discriminator="name")  # type: ignore
+    steps: List[Union[tuple(ACTION_REGISTRY)]] = Field(..., discriminator="name")  # type: ignore
 
     constants: CuratorConstants = None
     verbosity: VerbosityLevel = VerbosityLevel.NORMAL
@@ -43,11 +43,13 @@ class Curator(BaseModel):
     def _serialize_verbosity(self, value: VerbosityLevel):
         return value.name
 
-    def run(self, dataset: pd.DataFrame) -> Tuple[pd.DataFrame, CurationReport]:
+    def transform(self, dataset: pd.DataFrame) -> Tuple[pd.DataFrame, CurationReport]:
         report = CurationReport()
-        for action in self.actions:
+
+        dataset = dataset.copy(deep=True)
+        for action in self.steps:
             with report.section(action.name):
-                dataset = action.run(
+                dataset = action.transform(
                     dataset,
                     report=report,
                     verbosity=self.verbosity,
