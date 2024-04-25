@@ -12,7 +12,7 @@ from alchemy.types import VerbosityLevel
 def discretize(
     X: np.ndarray,
     thresholds: Union[np.ndarray, list],
-    copy: bool = True,
+    inplace: bool = False,
     allow_nan: bool = True,
     label_order: Literal["ascending", "descending"] = "ascending",
 ):
@@ -26,7 +26,7 @@ def discretize(
         thresholds: Feature values below or equal to this are replaced by 0, above it by 1.
             Threshold may not be less than 0 for operations on sparse matrices.
 
-        copy: Set to False to perform inplace discretization and avoid a copy
+        inplace: Set to True to perform inplace discretization and avoid a copy
             (if the input is already a numpy array or a scipy.sparse CSR / CSC
             matrix and if axis is 1).
 
@@ -53,7 +53,7 @@ def discretize(
     X = check_array(
         X,
         accept_sparse=["csr", "csc"],
-        copy=copy,
+        copy=not inplace,
         force_all_finite="allow-nan" if allow_nan else True,
         ensure_2d=False,
     )
@@ -79,7 +79,7 @@ class Discretization(BaseAction):
     input_column: str
     prefix: str = "CLS_"
     thresholds: list
-    copy: bool = True
+    inplace: bool = False
     allow_nan: bool = True
     label_order: Literal["ascending", "descending"] = "ascending"
 
@@ -94,7 +94,7 @@ class Discretization(BaseAction):
         X = discretize(
             X,
             thresholds=self.thresholds,
-            copy=self.copy,
+            inplace=self.inplace,
             allow_nan=self.allow_nan,
             label_order=self.label_order,
         )

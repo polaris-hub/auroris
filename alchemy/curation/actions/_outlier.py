@@ -32,31 +32,6 @@ def detect_outliers(X: np.ndarray, method: OutlierDetectionMethod, **kwargs):
     return is_inlier
 
 
-class OutlierDetection(BaseAction):
-    """
-    Automatic detection of outliers.
-    """
-
-    method: OutlierDetectionMethod
-    columns: List[str]
-    prefix: str = "OUTLIER_"
-    kwargs: Dict = Field(default_factory=dict)
-
-    def transform(
-        self,
-        dataset: pd.DataFrame,
-        report: Optional[CurationReport] = None,
-        verbosity: VerbosityLevel = VerbosityLevel.NORMAL,
-        parallelized_kwargs: Optional[Dict] = None,
-    ):
-        for column in self.columns:
-            values = dataset[column].values
-            is_inlier = detect_outliers(values, self.method, **self.kwargs)
-            dataset[self.get_column_name(column)] = is_inlier
-
-        return dataset
-
-
 def modified_zscore(data: np.ndarray, consistency_correction: float = 1.4826):
     """
     The modified z score is calculated from the median absolute deviation (MAD).
@@ -133,6 +108,31 @@ class ZscoreOutlier(OutlierMixin):
         """
         self.fit(X)
         return self.predict(X)
+
+
+class OutlierDetection(BaseAction):
+    """
+    Automatic detection of outliers.
+    """
+
+    method: OutlierDetectionMethod
+    columns: List[str]
+    prefix: str = "OUTLIER_"
+    kwargs: Dict = Field(default_factory=dict)
+
+    def transform(
+        self,
+        dataset: pd.DataFrame,
+        report: Optional[CurationReport] = None,
+        verbosity: VerbosityLevel = VerbosityLevel.NORMAL,
+        parallelized_kwargs: Optional[Dict] = None,
+    ):
+        for column in self.columns:
+            values = dataset[column].values
+            is_inlier = detect_outliers(values, self.method, **self.kwargs)
+            dataset[self.get_column_name(column)] = is_inlier
+
+        return dataset
 
 
 _OUTLIER_METHODS: Dict[OutlierDetectionMethod, OutlierMixin] = {
