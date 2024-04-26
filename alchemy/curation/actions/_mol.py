@@ -261,7 +261,8 @@ class MoleculeCuration(BaseAction):
             for col in df.columns:
                 report.log_new_column(col)
 
-            smiles = dataset[self.get_column_name("smiles")].dropna().values
+            smiles_col = self.get_column_name("smiles")
+            smiles = dataset[smiles_col].dropna().values
 
             with dm.without_rdkit_log():
                 # Temporary disable logs because of deprecation warning
@@ -269,5 +270,22 @@ class MoleculeCuration(BaseAction):
 
             fig = visualize_chemspace(X=X)
             report.log_image(fig)
+
+            if self.count_stereocenters:
+                # Plot all compounds with undefined stereocenters for visual inspection
+
+                undefined_col = self.get_column_name("num_undefined_stereo_center")
+                defined_col = self.get_column_name("num_defined_stereo_center")
+
+                to_plot = dataset[dataset[[undefined_col, defined_col]].notna().any(axis=1)]
+
+                legends = []
+                for _, row in to_plot.iterrows():
+                    undefined = row[undefined_col]
+                    defined = row[defined_col]
+                    legends.append(f"Undefined:{undefined}\n Definded:{defined}")
+
+                image = dm.to_image(to_plot[smiles_col].tolist(), legends=legends, use_svg=False)
+                report.log_image(image)
 
         return dataset

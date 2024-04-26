@@ -158,7 +158,7 @@ def visualize_distribution_with_outliers(
             x=np.arange(len(values)),
             y=values,
             hue=is_outlier,
-            palette={True: "red", False: "navy"},
+            palette={1.0: "red", 0.0: "navy", 0.5: "grey"},
             ax=axes[0],
         )
         stats.probplot(values, dist="norm", plot=axes[1])

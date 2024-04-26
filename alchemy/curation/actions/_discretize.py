@@ -101,6 +101,8 @@ class Discretization(BaseAction):
 
         column_name = self.get_column_name(self.input_column)
         dataset[column_name] = X
-        report.log_new_column(column_name)
+
+        if report is not None:
+            report.log_new_column(column_name)
 
         return dataset

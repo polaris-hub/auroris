@@ -25,12 +25,12 @@ def test_run_chemistry_curation():
     ]
 
     # check stereoisomers are included.
-    mol_dict = curate_molecules(mols=mols)
+    mol_dict, _ = curate_molecules(mols=mols)
     unique_smiles = set(mol_dict["smiles"])
     assert len(unique_smiles) == len(mols)
 
     # check if stereoisomers are ignored
-    mol_dict = curate_molecules(mols=mols, remove_stereo=True)
+    mol_dict, _ = curate_molecules(mols=mols, remove_stereo=True)
     unique_smiles = set(mol_dict["smiles"])
     assert len(unique_smiles) == len(mols) - 3
 

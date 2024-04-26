@@ -1,8 +1,8 @@
 import os
 
 from alchemy.curation import Curator
-from alchemy.curation.actions import MoleculeCuration, OutlierDetection
-from alchemy.report.broadcaster import LoggerBroadcaster
+from alchemy.curation.actions import Discretization, MoleculeCuration, OutlierDetection
+from alchemy.report.broadcaster import HTMLBroadcaster, LoggerBroadcaster
 
 
 def test_curator_save_load(tmpdir):
@@ -21,15 +21,19 @@ def test_curator_save_load(tmpdir):
     assert curator.steps[0].columns == ["outlier_column"]
 
 
-def test_curator_integration(dataset):
+def test_curator_integration(dataset, tmpdir):
     curator = Curator(
         steps=[
             OutlierDetection(method="zscore", columns=["outlier_column"]),
             MoleculeCuration(input_column="smiles"),
+            Discretization(input_column="outlier_column", thresholds=[0.0]),
         ],
     )
     dataset, report = curator.transform(dataset)
-    assert len(report.sections) == 2
+    assert len(report.sections) == 3
 
     broadcaster = LoggerBroadcaster(report)
+    broadcaster.broadcast()
+
+    broadcaster = HTMLBroadcaster(report, tmpdir)
     broadcaster.broadcast()

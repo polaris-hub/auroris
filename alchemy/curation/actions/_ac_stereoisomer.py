@@ -1,5 +1,6 @@
 from typing import Dict, List, Optional
 
+import datamol as dm
 import numpy as np
 import pandas as pd
 
@@ -59,10 +60,35 @@ class StereoIsomerACDetection(BaseAction):
         verbosity: VerbosityLevel = VerbosityLevel.NORMAL,
         parallelized_kwargs: Optional[Dict] = None,
     ):
-        return detect_streoisomer_activity_cliff(
+        dataset = detect_streoisomer_activity_cliff(
             dataset=dataset,
             stereo_column=self.stereo_column,
             y_cols=self.y_cols,
             threshold=self.threshold,
             prefix=self.prefix,
         )
+
+        if report is not None:
+            for col in self.y_cols:
+                col_with_prefix = self.get_column_name(col)
+                report.log_new_column(col_with_prefix)
+
+                has_cliff = dataset[col_with_prefix].notna()
+                num_cliff = has_cliff.sum()
+
+                if num_cliff > 0:
+                    report.log(
+                        f"Found {num_cliff} activity cliffs among stereoisomers "
+                        "with respect to the {col} column."
+                    )
+
+                    to_plot = dataset.loc[has_cliff, "smiles"]
+                    legends = dataset.loc[has_cliff, col_with_prefix]
+
+                    image = dm.to_image([dm.to_mol(s) for s in to_plot], legends=legends, use_svg=False)
+                    report.log_image(image)
+
+                else:
+                    report.log(
+                        "Found no activity cliffs among stereoisomers with respect to the {col} column."
+                    )
