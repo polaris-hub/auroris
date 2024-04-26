@@ -13,7 +13,7 @@ except ImportError:
 
 def visualize_chemspace(
     X: Union[List[np.ndarray], np.ndarray],
-    y: Union[List[np.ndarray], np.ndarray],
+    y: Optional[Union[List[np.ndarray], np.ndarray]] = None,
     labels: Optional[List[str]] = None,
     n_cols: int = 3,
     fig_base_size: float = 8,
@@ -43,6 +43,8 @@ def visualize_chemspace(
         X = [X]
     if isinstance(y, np.ndarray):
         y = [y]
+    if y is None:
+        y = [None for _ in range(len(X))]
     if len(X) != len(y):
         raise ValueError("X and y must have the same length.")
 

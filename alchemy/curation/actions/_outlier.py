@@ -143,12 +143,14 @@ class OutlierDetection(BaseAction):
             values = dataset[column].values
             is_outlier = detect_outliers(values, self.method, **self.kwargs)
 
-            fig = visualize_distribution_with_outliers(values=values, is_outlier=is_outlier)
-            report.log_image(fig)
-
             is_outlier_col_label = self.get_column_name(column)
             dataset[is_outlier_col_label] = is_outlier
-            report.log_new_column(is_outlier_col_label)
+
+            if report is not None:
+                report.log_new_column(is_outlier_col_label)
+
+                fig = visualize_distribution_with_outliers(values=values, is_outlier=is_outlier)
+                report.log_image(fig)
 
         return dataset
 

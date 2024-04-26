@@ -29,10 +29,6 @@ class HTMLBroadcaster(ReportBroadcaster):
         # Count the images
         self._image_count = 0
 
-    def __del__(self):
-        # Close the file
-        self._file_descriptor.__exit__()
-
     def on_logs_start(self):
         # Start an unordered list
         self._file.write("<h3>Logs</h3>")
@@ -71,3 +67,4 @@ class HTMLBroadcaster(ReportBroadcaster):
 
     def on_report_end(self, report: CurationReport):
         self._file.write("</html>")
+        self._file_descriptor.__exit__()

@@ -2,12 +2,14 @@ from functools import partial
 from typing import Dict, List, Optional, Tuple, Union
 
 import datamol as dm
+import numpy as np
 import pandas as pd
 from rdkit.Chem import FindMolChiralCenters
 
 from alchemy.curation.actions._base import BaseAction
 from alchemy.report import CurationReport
 from alchemy.types import VerbosityLevel
+from alchemy.visualization import visualize_chemspace
 
 
 def curate_molecules(
@@ -252,9 +254,19 @@ class MoleculeCuration(BaseAction):
             if report is not None:
                 report.log(f"Couldn't preprocess {num_invalid} / {len(dataset)} molecules.")
 
+        dataset = pd.concat([dataset, df], axis=1)
+
         if report is not None:
             for col in df.columns:
                 report.log_new_column(col)
 
-        dataset = pd.concat([dataset, df], axis=1)
+            smiles = dataset[self.get_column_name("smiles")].dropna().values
+
+            with dm.without_rdkit_log():
+                # Temporary disable logs because of deprecation warning
+                X = np.array([dm.to_fp(smi) for smi in smiles])
+
+            fig = visualize_chemspace(X=X)
+            report.log_image(fig)
+
         return dataset
