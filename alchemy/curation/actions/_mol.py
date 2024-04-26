@@ -36,7 +36,8 @@ def curate_molecules(
 
     # Go from list of dicts to dict of lists
     mol_dict = {k: [dic[k] for dic in mol_list] for k in mol_list[0]}
-    return mol_dict
+    num_invalid = len([smi for smi in mol_dict["smiles"] if smi is None])
+    return mol_dict, num_invalid
 
 
 def _standardize_mol(mol: Union[dm.Mol, str], remove_salt_solvent: bool = True, remove_stereo: bool = False):
@@ -103,20 +104,32 @@ def _curate_molecule(
     mol_dict = {}
 
     with dm.without_rdkit_log():
-        mol = _standardize_mol(mol, remove_salt_solvent=remove_salt_solvent, remove_stereo=remove_stereo)
+        try:
+            mol = _standardize_mol(mol, remove_salt_solvent=remove_salt_solvent, remove_stereo=remove_stereo)
+        except Exception:
+            # The molecule could not be preprocessed. We assume it's an invalid molecule and return an empty dict
+            return _get_mol_dict()
 
-        mol_dict["smiles"] = dm.to_smiles(mol, canonical=True)
-        mol_dict["molhash_id"] = dm.hash_mol(mol)
-        mol_dict["molhash_id_no_stereo"] = dm.hash_mol(mol, hash_scheme="no_stereo")
+        smiles = dm.to_smiles(mol, canonical=True)
+        molhash_id = dm.hash_mol(mol)
+        molhash_id_no_stereo = dm.hash_mol(mol, hash_scheme="no_stereo")
+
+        num_stereoisomers = None
+        num_undefined_stereoisomers = None
+        num_all_centers = None
+        num_defined_centers = None
+        num_undefined_centers = None
+        undefined_e_d = None
+        undefined_e_z = None
 
         if count_stereoisomers:
             # number of possible stereoisomers
-            mol_dict["num_stereoisomers"] = dm.count_stereoisomers(
+            num_stereoisomers = dm.count_stereoisomers(
                 mol=mol, undefined_only=False, rationalise=True, clean_it=True
             )
 
             # number of undefined stereoisomers
-            mol_dict["num_undefined_stereoisomers"] = dm.count_stereoisomers(
+            num_undefined_stereoisomers = dm.count_stereoisomers(
                 mol=mol, undefined_only=True, rationalise=True, clean_it=True
             )
 
@@ -124,21 +137,51 @@ def _curate_molecule(
             # number of stereocenters
             num_all_centers, num_defined_centers, num_undefined_centers = _num_stereo_centers(mol)
 
-            # number of undefined stereoisomers
-            mol_dict["num_defined_stereo_center"] = num_defined_centers
-            mol_dict["num_undefined_stereo_center"] = num_undefined_centers
-            mol_dict["num_stereo_center"] = num_all_centers
-
             # None of the stereochemistry is defined in the molecule
-            mol_dict["undefined_E_D"] = num_defined_centers == 0 and num_all_centers > 0
+            undefined_e_d = num_defined_centers == 0 and num_all_centers > 0
 
         if count_stereocenters and count_stereoisomers:
             # Undefined EZ stereochemistry which has no stereocenter.
-            mol_dict["undefined_E_D"] = (
-                mol_dict["num_stereo_center"] == 0 and mol_dict["num_undefined_stereoisomers"] > 0,
-            )
+            undefined_e_z = num_all_centers == 0 and num_undefined_centers
 
-    return mol_dict
+    return _get_mol_dict(
+        smiles=smiles,
+        molhash_id=molhash_id,
+        molhash_id_no_stereo=molhash_id_no_stereo,
+        num_stereoisomers=num_stereoisomers,
+        num_undefined_stereoisomers=num_undefined_stereoisomers,
+        num_defined_stereo_center=num_defined_centers,
+        num_undefined_stereo_center=num_undefined_centers,
+        num_stereo_center=num_all_centers,
+        undefined_E_D=undefined_e_d,
+        undefined_E_Z=undefined_e_z,
+    )
+
+
+def _get_mol_dict(
+    smiles: Optional[str] = None,
+    molhash_id: Optional[str] = None,
+    molhash_id_no_stereo: Optional[str] = None,
+    num_stereoisomers: Optional[int] = None,
+    num_undefined_stereoisomers: Optional[int] = None,
+    num_defined_stereo_center: Optional[int] = None,
+    num_undefined_stereo_center: Optional[int] = None,
+    num_stereo_center: Optional[int] = None,
+    undefined_E_D: Optional[bool] = None,
+    undefined_E_Z: Optional[bool] = None,
+):
+    return {
+        "smiles": smiles,
+        "molhash_id": molhash_id,
+        "molhash_id_no_stereo": molhash_id_no_stereo,
+        "num_stereoisomers": num_stereoisomers,
+        "num_undefined_stereoisomers": num_undefined_stereoisomers,
+        "num_defined_stereo_center": num_defined_stereo_center,
+        "num_undefined_stereo_center": num_undefined_stereo_center,
+        "num_stereo_center": num_stereo_center,
+        "undefined_E_D": undefined_E_D,
+        "undefined_E/Z": undefined_E_Z,
+    }
 
 
 def _num_stereo_centers(mol: dm.Mol) -> Tuple[int]:
@@ -195,7 +238,7 @@ class MoleculeCuration(BaseAction):
         mols = dataset[self.input_column].values
 
         parallelized_kwargs = parallelized_kwargs or {}
-        mol_dict = curate_molecules(
+        mol_dict, num_invalid = curate_molecules(
             mols,
             progress=verbosity > 1,
             remove_salt_solvent=self.remove_salt_solvent,
@@ -207,9 +250,13 @@ class MoleculeCuration(BaseAction):
         mol_dict = {self.get_column_name(k): v for k, v in mol_dict.items()}
         df = pd.DataFrame(mol_dict)
 
+        if num_invalid > 0:
+            if report is not None:
+                report.log(f"Couldn't preprocess {num_invalid} / {len(dataset)} molecules.")
+
         if report is not None:
             for col in df.columns:
-                report.log(f"Added the {col} column.")
+                report.log_new_column(col)
 
         dataset = pd.concat([dataset, df], axis=1)
         return dataset

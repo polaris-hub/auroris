@@ -1,3 +1,3 @@
-from ._loguru import LoguruBroadcaster
+from ._logger import LoggerBroadcaster
 
-__all__ = ["LoguruBroadcaster"]
+__all__ = ["LoggerBroadcaster"]

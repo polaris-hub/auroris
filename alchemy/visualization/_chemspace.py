@@ -37,7 +37,7 @@ def visualize_chemspace(
     """
 
     if umap is None:
-        raise ImportError("Please run `pip install umap-learn` to use this function.")
+        raise ImportError("Please run `pip install umap-learn` to use UMAP visualizations for the chemspace.")
 
     if isinstance(X, np.ndarray):
         X = [X]

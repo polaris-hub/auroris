@@ -6,7 +6,6 @@ import seaborn as sns
 from loguru import logger
 from scipy import stats
 
-from alchemy.curation.functional import detect_outliers
 from alchemy.visualization.utils import create_figure
 
 
@@ -149,6 +148,9 @@ def visualize_distribution_with_outliers(
     values = np.sort(values)
 
     if is_outlier is None:
+        # Import here to prevent ciruclar imports
+        from alchemy.curation.functional import detect_outliers
+
         is_outlier = detect_outliers(values)
 
     with create_figure(n_plots=2) as (fig, axes):

@@ -2,7 +2,7 @@ import os
 
 from alchemy.curation import Curator
 from alchemy.curation.actions import MoleculeCuration, OutlierDetection
-from alchemy.report.broadcaster import LoguruBroadcaster
+from alchemy.report.broadcaster import LoggerBroadcaster
 
 
 def test_curator_save_load(tmpdir):
@@ -31,5 +31,5 @@ def test_curator_integration(dataset):
     dataset, report = curator.transform(dataset)
     assert len(report.sections) == 2
 
-    broadcaster = LoguruBroadcaster(report)
+    broadcaster = LoggerBroadcaster(report)
     broadcaster.broadcast()

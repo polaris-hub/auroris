@@ -16,7 +16,7 @@ nav:
   - Getting started:
       - Alchemy: index.md
   - Tutorials:
-      - Data Curation: tutorials/data_curation.ipynb
+      - Getting Started: tutorials/getting_started.ipynb
   - Community: https://discord.gg/vBFd8p6H7u
   - Polaris Hub: https://polarishub.io/
 

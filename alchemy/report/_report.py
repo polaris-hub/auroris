@@ -8,7 +8,7 @@ from PIL.Image import Image as ImageType
 from pydantic import BaseModel, ConfigDict, Field, PrivateAttr
 
 from alchemy import __version__
-from alchemy.visualization.utils import fig2img
+from alchemy.utils import fig2img
 
 
 class Section(BaseModel):
@@ -52,6 +52,10 @@ class CurationReport(BaseModel):
     def log(self, message: str):
         """Log a message to the report"""
         self._active_section.logs.append(message)
+
+    def log_new_column(self, name: str):
+        """Log that a new column has been added to the dataset"""
+        self.log(f"New column added: {name}")
 
     def log_image(self, image_or_figure: Union[ImageType, Figure]):
         """Logs an image. Also accepts Matplotlib figures, which will be converted to images."""

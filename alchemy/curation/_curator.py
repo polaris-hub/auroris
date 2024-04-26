@@ -50,7 +50,7 @@ class Curator(BaseModel):
         return dataset, report
 
     def __call__(self, dataset):
-        return self.run(dataset)
+        return self.transform(dataset)
 
     @classmethod
     def from_json(cls, path: str):

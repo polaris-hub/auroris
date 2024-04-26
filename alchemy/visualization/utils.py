@@ -4,9 +4,6 @@ from typing import Optional
 import numpy as np
 import seaborn as sns
 from matplotlib import pyplot as plt
-from matplotlib.figure import Figure
-from PIL import Image
-from PIL.Image import Image as ImageType
 
 
 @contextmanager
@@ -47,12 +44,3 @@ def create_figure(
 
     # Remove unused axes
     _ = [fig.delaxes(a) for a in axes[n_plots:]]
-
-
-def fig2img(fig: Figure) -> ImageType:
-    """Convert a Matplotlib figure to a PIL Image"""
-    return Image.frombytes(
-        "RGB",
-        fig.canvas.get_width_height(),
-        fig.canvas.tostring_rgb(),
-    )

@@ -42,7 +42,7 @@ def detect_streoisomer_activity_cliff(
     return dataset.sort_index()
 
 
-class StereoIsomer(BaseAction):
+class StereoIsomerACDetection(BaseAction):
     """
     Automatic detection of outliers.
     """

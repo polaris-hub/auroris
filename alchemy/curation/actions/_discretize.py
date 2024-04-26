@@ -98,5 +98,9 @@ class Discretization(BaseAction):
             allow_nan=self.allow_nan,
             label_order=self.label_order,
         )
-        dataset[self.get_column_name(self.input_column)] = X
+
+        column_name = self.get_column_name(self.input_column)
+        dataset[column_name] = X
+        report.log_new_column(column_name)
+
         return dataset

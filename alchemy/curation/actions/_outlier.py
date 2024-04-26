@@ -13,6 +13,7 @@ from sklearn.svm import OneClassSVM
 from alchemy.curation.actions._base import BaseAction
 from alchemy.report import CurationReport
 from alchemy.types import VerbosityLevel
+from alchemy.visualization import visualize_distribution_with_outliers
 
 OutlierDetectionMethod: TypeAlias = Literal["iso", "lof", "svm", "ee", "zscore"]
 
@@ -141,7 +142,13 @@ class OutlierDetection(BaseAction):
         for column in self.columns:
             values = dataset[column].values
             is_outlier = detect_outliers(values, self.method, **self.kwargs)
-            dataset[self.get_column_name(column)] = is_outlier
+
+            fig = visualize_distribution_with_outliers(values=values, is_outlier=is_outlier)
+            report.log_image(fig)
+
+            is_outlier_col_label = self.get_column_name(column)
+            dataset[is_outlier_col_label] = is_outlier
+            report.log_new_column(is_outlier_col_label)
 
         return dataset
 
