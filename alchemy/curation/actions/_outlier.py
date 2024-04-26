@@ -17,8 +17,14 @@ from alchemy.types import VerbosityLevel
 OutlierDetectionMethod: TypeAlias = Literal["iso", "lof", "svm", "ee", "zscore"]
 
 
-def detect_outliers(X: np.ndarray, method: OutlierDetectionMethod, **kwargs):
-    """"""
+def detect_outliers(X: np.ndarray, method: OutlierDetectionMethod = "zscore", **kwargs):
+    """Functional interface for detecting outliers
+
+    Args:
+        X: The observations that we want to classify as inliers or outliers.
+        method: The method to use for outlier detection.
+        **kwargs: Keyword arguments for the outlier detection method.
+    """
 
     if X.ndim != 1:
         raise ValueError("X must be a 1D array for outlier detection.")

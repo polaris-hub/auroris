@@ -5,7 +5,6 @@ import fsspec
 import pandas as pd
 from pydantic import BaseModel, Field, field_serializer, field_validator
 
-from alchemy.curation import CuratorConstants
 from alchemy.curation.actions._base import ACTION_REGISTRY
 from alchemy.report import CurationReport
 from alchemy.types import VerbosityLevel
@@ -23,15 +22,8 @@ class Curator(BaseModel):
     # and https://github.com/pydantic/pydantic/issues/2036
     steps: List[Union[tuple(ACTION_REGISTRY)]] = Field(..., discriminator="name")  # type: ignore
 
-    constants: CuratorConstants = None
     verbosity: VerbosityLevel = VerbosityLevel.NORMAL
     parallelized_kwargs: dict = Field(default_factory=dict)
-
-    @field_validator("constants", mode="before")
-    def _validate_constants(cls, v):
-        if v is None:
-            return CuratorConstants()
-        return v
 
     @field_validator("verbosity", mode="before")
     def _validate_verbosity(cls, v):

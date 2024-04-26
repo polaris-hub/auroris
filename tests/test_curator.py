@@ -31,5 +31,5 @@ def test_curator_integration(dataset):
     dataset, report = curator.transform(dataset)
     assert len(report.sections) == 2
 
-    broadcaster = LoguruBroadcaster()
-    broadcaster.broadcast(report)
+    broadcaster = LoguruBroadcaster(report)
+    broadcaster.broadcast()

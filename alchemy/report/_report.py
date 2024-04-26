@@ -1,10 +1,14 @@
 from contextlib import contextmanager
 from datetime import datetime
-from typing import List, Optional
+from typing import List, Optional, Union
 
-from pydantic import BaseModel, Field, PrivateAttr
+from matplotlib import pyplot as plt
+from matplotlib.figure import Figure
+from PIL.Image import Image as ImageType
+from pydantic import BaseModel, ConfigDict, Field, PrivateAttr
 
 from alchemy import __version__
+from alchemy.visualization.utils import fig2img
 
 
 class Section(BaseModel):
@@ -12,8 +16,11 @@ class Section(BaseModel):
     A section in a report.
     """
 
-    name: str
+    title: str
     logs: List[str] = Field(default_factory=list)
+    images: List[ImageType] = Field(default_factory=list)
+
+    model_config = ConfigDict(arbitrary_types_allowed=True)
 
 
 class CurationReport(BaseModel):
@@ -28,7 +35,7 @@ class CurationReport(BaseModel):
     _active_section: Optional[Section] = PrivateAttr(None)
 
     def start_section(self, name: str):
-        self.sections.append(Section(name=name))
+        self.sections.append(Section(title=name))
         self._active_section = self.sections[-1]
 
     def end_section(self):
@@ -43,4 +50,17 @@ class CurationReport(BaseModel):
             self.end_section()
 
     def log(self, message: str):
+        """Log a message to the report"""
         self._active_section.logs.append(message)
+
+    def log_image(self, image_or_figure: Union[ImageType, Figure]):
+        """Logs an image. Also accepts Matplotlib figures, which will be converted to images."""
+
+        if isinstance(image_or_figure, Figure):
+            image = fig2img(image_or_figure)
+            plt.close(image_or_figure)
+
+        else:
+            image = image_or_figure
+
+        self._active_section.images.append(image)
