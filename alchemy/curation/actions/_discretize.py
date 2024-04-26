@@ -15,7 +15,7 @@ def discretize(
     inplace: bool = False,
     allow_nan: bool = True,
     label_order: Literal["ascending", "descending"] = "ascending",
-):
+) -> np.ndarray:
     """Thresholding of array-like or scipy.sparse matrix into binary or multiclass labels.
 
     Args:

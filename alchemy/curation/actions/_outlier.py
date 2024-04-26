@@ -1,4 +1,4 @@
-from typing import Dict, List, Literal, Optional, TypeAlias
+from typing import Any, Dict, List, Literal, Optional, TypeAlias
 
 import numpy as np
 import pandas as pd
@@ -18,7 +18,7 @@ from alchemy.visualization import visualize_distribution_with_outliers
 OutlierDetectionMethod: TypeAlias = Literal["iso", "lof", "svm", "ee", "zscore"]
 
 
-def detect_outliers(X: np.ndarray, method: OutlierDetectionMethod = "zscore", **kwargs):
+def detect_outliers(X: np.ndarray, method: OutlierDetectionMethod = "zscore", **kwargs: Any):
     """Functional interface for detecting outliers
 
     Args:

@@ -26,7 +26,7 @@ def deduplicate(
         deduplicate_on: A subset of the columns to deduplicate on (can be default).
         y_cols: The columns to aggregate.
         keep: Whether to keep the first or last copy of the duplicates.
-        aggregate: The method to aggregate the data.
+        method: The method to aggregate the data.
     """
 
     groups = []

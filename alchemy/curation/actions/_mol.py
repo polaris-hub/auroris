@@ -101,8 +101,6 @@ def _curate_molecule(
         mol_dict: Dictionary with the curated molecule and additional metadata
     """
 
-    mol_dict = {}
-
     with dm.without_rdkit_log():
         try:
             mol = _standardize_mol(mol, remove_salt_solvent=remove_salt_solvent, remove_stereo=remove_stereo)
@@ -212,7 +210,7 @@ def _num_stereo_centers(mol: dm.Mol) -> Tuple[int]:
 
 class MoleculeCuration(BaseAction):
     """
-    Args:
+    Attributes:
         input_column: The name of the column that has the molecules (either `dm.Mol` objects or SMILES).
         remove_salt_solvent: When set to 'True', all disconnected salts and solvents
             will be removed from molecule. In most of the cases, it is recommended to remove the salts/solvents.

@@ -17,6 +17,17 @@ nav:
       - Alchemy: index.md
   - Tutorials:
       - Getting Started: tutorials/getting_started.ipynb
+  - API Reference:
+      - Curator: api/curator.md
+      - Actions: 
+          - Deduplication: api/actions/deduplication.md
+          - Discretization: api/actions/discretization.md
+          - Molecule Curation: api/actions/mol.md
+          - Outlier Detection: api/actions/outlier_detection.md
+          - Stereoisomer AC: api/actions/stereo_ac.md
+      - Functional: api/functional.md
+      - Visualization: api/visualization.md
+      - Types: api/types.md
   - Community: https://discord.gg/vBFd8p6H7u
   - Polaris Hub: https://polarishub.io/
 

@@ -1,4 +1,4 @@
-from typing import List, Optional, Union
+from typing import Any, List, Optional, Union
 
 import numpy as np
 import seaborn as sns
@@ -20,7 +20,7 @@ def visualize_chemspace(
     w_h_ratio: float = 0.5,
     dpi: int = 150,
     seaborn_theme: Optional[str] = "whitegrid",
-    **umap_kwargs,
+    **umap_kwargs: Any,
 ):
     """Plot the chemical space. Also, color based on the target values.
 
