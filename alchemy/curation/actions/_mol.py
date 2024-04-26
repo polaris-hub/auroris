@@ -66,7 +66,8 @@ def _standardize_mol(mol: Union[dm.Mol, str], remove_salt_solvent: bool = True, 
             stereo=not remove_stereo,
         )
         # remove salts
-        mol = dm.remove_salts_solvents(mol)
+        # but don't remove everything if the molecule is salt or solvent itself
+        mol = dm.remove_salts_solvents(mol, dont_remove_everything=True)
 
     # remove stereochemistry information
     if remove_stereo:
