@@ -56,5 +56,5 @@ class LoggerBroadcaster(ReportBroadcaster):
 
     def on_report_start(self, report: CurationReport):
         self.logger.critical("===== Curation Report =====")
-        self.logger.debug(f"Time: {report.time_stamp.strftime("%Y-%m-%d %H:%M:%S")}")
+        self.logger.debug(f"Time: {report.time_stamp.strftime('%Y-%m-%d %H:%M:%S')}")
         self.logger.debug(f"Version: {report.alchemy_version}")
