@@ -10,10 +10,10 @@ from sklearn.ensemble import IsolationForest
 from sklearn.neighbors import LocalOutlierFactor
 from sklearn.svm import OneClassSVM
 
-from alchemy.curation.actions._base import BaseAction
-from alchemy.report import CurationReport
-from alchemy.types import VerbosityLevel
-from alchemy.visualization import visualize_distribution_with_outliers
+from auroris.curation.actions._base import BaseAction
+from auroris.report import CurationReport
+from auroris.types import VerbosityLevel
+from auroris.visualization import visualize_distribution_with_outliers
 
 OutlierDetectionMethod: TypeAlias = Literal["iso", "lof", "svm", "ee", "zscore"]
 

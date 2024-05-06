@@ -4,6 +4,7 @@ from ._deduplicate import Deduplication
 from ._discretize import Discretization
 from ._mol import MoleculeCuration
 from ._outlier import OutlierDetection
+from ._distribution import DataDistribution
 
 __all__ = [
     "BaseAction",
@@ -12,4 +13,5 @@ __all__ = [
     "Deduplication",
     "Discretization",
     "StereoIsomerACDetection",
+    "DataDistribution",
 ]

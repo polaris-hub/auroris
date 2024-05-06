@@ -3,7 +3,7 @@ from typing import Any, List, Optional, Union
 import numpy as np
 import seaborn as sns
 
-from alchemy.visualization.utils import create_figure
+from auroris.visualization.utils import create_figure
 
 try:
     import umap  # type: ignore

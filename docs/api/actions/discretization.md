@@ -1,4 +1,4 @@
 
-::: alchemy.curation.actions.Discretization
+::: auroris.curation.actions.Discretization
     options:
         filters: ["!^_"]

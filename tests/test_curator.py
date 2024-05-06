@@ -1,8 +1,8 @@
 import os
 
-from alchemy.curation import Curator
-from alchemy.curation.actions import Discretization, MoleculeCuration, OutlierDetection
-from alchemy.report.broadcaster import HTMLBroadcaster, LoggerBroadcaster
+from auroris.curation import Curator
+from auroris.curation.actions import Discretization, MoleculeCuration, OutlierDetection
+from auroris.report.broadcaster import HTMLBroadcaster, LoggerBroadcaster
 
 
 def test_curator_save_load(tmpdir):

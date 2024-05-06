@@ -1,4 +1,4 @@
 
-::: alchemy.curation.actions.MoleculeCuration
+::: auroris.curation.actions.MoleculeCuration
     options:
         filters: ["!^_"]

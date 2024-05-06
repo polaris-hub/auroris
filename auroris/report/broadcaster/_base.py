@@ -2,7 +2,7 @@ import abc
 
 from PIL.Image import Image as ImageType
 
-from alchemy.report import CurationReport, Section
+from auroris.report import CurationReport, Section
 
 
 class ReportBroadcaster(abc.ABC):
@@ -28,7 +28,9 @@ class ReportBroadcaster(abc.ABC):
             if len(section.images) > 0:
                 self.on_images_start()
                 for image in section.images:
-                    self.render_image(image)
+                    self.on_image_start(image.title)
+                    self.render_image(image.image_data)
+                    self.on_image_end(image.description)
                 self.on_images_end()
 
             self.on_section_end(section)

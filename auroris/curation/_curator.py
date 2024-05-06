@@ -5,9 +5,9 @@ import fsspec
 import pandas as pd
 from pydantic import BaseModel, Field, field_serializer, field_validator
 
-from alchemy.curation.actions._base import ACTION_REGISTRY
-from alchemy.report import CurationReport
-from alchemy.types import VerbosityLevel
+from auroris.curation.actions._base import ACTION_REGISTRY
+from auroris.report import CurationReport
+from auroris.types import VerbosityLevel
 
 
 class Curator(BaseModel):
@@ -25,6 +25,8 @@ class Curator(BaseModel):
     verbosity: VerbosityLevel = VerbosityLevel.NORMAL
     parallelized_kwargs: dict = Field(default_factory=dict)
 
+    state: List[str] = []
+
     @field_validator("verbosity", mode="before")
     def _validate_verbosity(cls, v):
         if not isinstance(v, VerbosityLevel):
@@ -40,6 +42,8 @@ class Curator(BaseModel):
 
         dataset = dataset.copy(deep=True)
         for action in self.steps:
+            if action._dep_action and not action._dep_action in self.state:
+                raise RuntimeError(f"{action._dep_action} should be called before {action.name}.")
             with report.section(action.name):
                 dataset = action.transform(
                     dataset,
@@ -47,6 +51,9 @@ class Curator(BaseModel):
                     verbosity=self.verbosity,
                     parallelized_kwargs=self.parallelized_kwargs,
                 )
+                action.completed = True
+                self.state.append(action.name)
+
         return dataset, report
 
     def __call__(self, dataset):

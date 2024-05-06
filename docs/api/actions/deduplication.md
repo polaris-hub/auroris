@@ -1,4 +1,4 @@
 
-::: alchemy.curation.actions.Deduplication
+::: auroris.curation.actions.Deduplication
     options:
         filters: ["!^_"]

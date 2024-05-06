@@ -3,7 +3,7 @@ import sys
 
 from PIL.Image import Image as ImageType
 
-from alchemy.report import CurationReport, Section
+from auroris.report import CurationReport, Section
 
 from ._base import ReportBroadcaster
 
@@ -57,4 +57,4 @@ class LoggerBroadcaster(ReportBroadcaster):
     def on_report_start(self, report: CurationReport):
         self.logger.critical("===== Curation Report =====")
         self.logger.debug(f"Time: {report.time_stamp.strftime('%Y-%m-%d %H:%M:%S')}")
-        self.logger.debug(f"Version: {report.alchemy_version}")
+        self.logger.debug(f"Version: {report.auroris_version}")

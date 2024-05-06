@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 
-from alchemy.curation.functional import discretize
+from auroris.curation.functional import discretize
 
 
 def test_discretizer():

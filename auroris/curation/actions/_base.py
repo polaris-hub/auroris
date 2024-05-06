@@ -1,13 +1,13 @@
 import abc
-from typing import TYPE_CHECKING, Dict, Optional
+from typing import TYPE_CHECKING, Dict, Optional, Literal
 
 import pandas as pd
 from pydantic import BaseModel, model_validator
 
-from alchemy.types import VerbosityLevel
+from auroris.types import VerbosityLevel
 
 if TYPE_CHECKING:
-    from alchemy.report import CurationReport
+    from auroris.report import CurationReport
 
 
 ACTION_REGISTRY = []
@@ -19,9 +19,22 @@ class BaseAction(BaseModel, abc.ABC):
 
     Args:
         prefix: If the action adds columns, use this prefix.
+        completed: If the action has completed.
+        dep_action: Name of dependent action.
     """
 
     prefix: str = None
+    completed: bool = False
+    _dep_action: Optional[
+        Literal[
+            "MoleculeCuration",
+            "OutlierDetection",
+            "Deduplication",
+            "Discretization",
+            "StereoIsomerACDetection",
+            "DataDistribution",
+        ]
+    ] = None
 
     @property
     def name(self) -> str:
@@ -32,7 +45,7 @@ class BaseAction(BaseModel, abc.ABC):
     @classmethod
     def _validate_model(cls, m: "BaseAction"):
         if m.prefix is None:
-            m = m.name.upper() + "_"
+            m.prefix = m.name.upper() + "_"
         return m
 
     def get_column_name(self, column: str):

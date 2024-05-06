@@ -6,12 +6,39 @@ import seaborn as sns
 from loguru import logger
 from scipy import stats
 
-from alchemy.visualization.utils import create_figure
+from auroris.visualization.utils import create_figure
+
+import seaborn as sns
+import matplotlib.pyplot as plt
+import numpy as np
+
+
+def distribution_with_class(data, sections):
+    # Create a KDE plot without filling
+    fig = sns.kdeplot(data, color="black", linewidth=1.5, label="KDE Curve")
+
+    # Calculate KDE values for filling sections
+    kde_values = sns.kdeplot(data).get_lines()[0].get_data()
+
+    # Fill the sections under the KDE curve
+    for section in sections:
+        mask = (kde_values[0] >= section["start"]) & (kde_values[0] <= section["end"])
+        plt.fill_between(kde_values[0][mask], kde_values[1][mask], alpha=0.5, label=section["label"])
+
+    # Add a legend
+    plt.legend()
+
+    # Show the plot
+    plt.xlabel("X-axis")
+    plt.ylabel("Density")
+    plt.title("KDE Plot with Filled Sections")
+    return fig.figure
 
 
 def detailed_distributions_plots(
     df: pd.DataFrame,
-    thresholds: Dict[str, Tuple[int, Callable]] = None,
+    thresholds: Optional[Dict[str, Tuple[int, Callable]]] = None,
+    discretizer: Optional[callable] = None,
     label_names: List[str] = None,
     log_scale_mapping: Dict[str, bool] = None,
     positive_color: str = "#3db371",
@@ -149,7 +176,7 @@ def visualize_distribution_with_outliers(
 
     if is_outlier is None:
         # Import here to prevent ciruclar imports
-        from alchemy.curation.functional import detect_outliers
+        from auroris.curation.functional import detect_outliers
 
         is_outlier = detect_outliers(values)
 

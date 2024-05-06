@@ -1,14 +1,25 @@
 from contextlib import contextmanager
 from datetime import datetime
-from typing import List, Optional, Union
+from typing import List, Optional, Union, ByteString
 
 from matplotlib import pyplot as plt
 from matplotlib.figure import Figure
 from PIL.Image import Image as ImageType
 from pydantic import BaseModel, ConfigDict, Field, PrivateAttr
+from IPython.core.display import Image as IPy_Image
 
-from alchemy import __version__
-from alchemy.utils import fig2img
+from auroris import __version__
+from auroris.utils import fig2bytes
+
+
+class Image(BaseModel):
+    """
+    A image subsection in a report
+    """
+
+    image_data: bytes
+    title: str
+    description: str
 
 
 class Section(BaseModel):
@@ -18,7 +29,7 @@ class Section(BaseModel):
 
     title: str
     logs: List[str] = Field(default_factory=list)
-    images: List[ImageType] = Field(default_factory=list)
+    images: List[Image] = Field(default_factory=list)
 
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
@@ -29,7 +40,7 @@ class CurationReport(BaseModel):
     """
 
     sections: List[Section] = Field(default_factory=list)
-    alchemy_version: str = Field(default=__version__)
+    auroris_version: str = Field(default=__version__)
     time_stamp: datetime = Field(default_factory=datetime.now)
 
     _active_section: Optional[Section] = PrivateAttr(None)
@@ -57,14 +68,19 @@ class CurationReport(BaseModel):
         """Log that a new column has been added to the dataset"""
         self.log(f"New column added: {name}")
 
-    def log_image(self, image_or_figure: Union[ImageType, Figure]):
+    def log_image(
+        self, image_or_figure: Union[ImageType, Figure, ByteString], title: str = "", description: str = ""
+    ):
         """Logs an image. Also accepts Matplotlib figures, which will be converted to images."""
 
-        if isinstance(image_or_figure, Figure):
-            image = fig2img(image_or_figure)
+        if isinstance(image_or_figure, IPy_Image):
+            image_data = image_or_figure.data
+
+        elif isinstance(image_or_figure, Figure):
+            image_data = fig2bytes(image_or_figure)
             plt.close(image_or_figure)
-
         else:
-            image = image_or_figure
+            image_data = image_or_figure
 
+        image = Image(image_data=image_data, title=title, description=description)
         self._active_section.images.append(image)

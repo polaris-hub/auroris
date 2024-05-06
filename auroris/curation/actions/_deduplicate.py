@@ -2,9 +2,9 @@ from typing import Dict, List, Literal, Optional, Union
 
 import pandas as pd
 
-from alchemy.curation.actions._base import BaseAction
-from alchemy.report import CurationReport
-from alchemy.types import VerbosityLevel
+from auroris.curation.actions._base import BaseAction
+from auroris.report import CurationReport
+from auroris.types import VerbosityLevel
 
 
 def deduplicate(
