@@ -1,5 +1,5 @@
 import abc
-from typing import TYPE_CHECKING, Dict, Optional, Literal
+from typing import TYPE_CHECKING, Dict, Optional
 
 import pandas as pd
 from pydantic import BaseModel, model_validator
@@ -24,17 +24,6 @@ class BaseAction(BaseModel, abc.ABC):
     """
 
     prefix: str = None
-    completed: bool = False
-    _dep_action: Optional[
-        Literal[
-            "MoleculeCuration",
-            "OutlierDetection",
-            "Deduplication",
-            "Discretization",
-            "StereoIsomerACDetection",
-            "DataDistribution",
-        ]
-    ] = None
 
     @property
     def name(self) -> str:

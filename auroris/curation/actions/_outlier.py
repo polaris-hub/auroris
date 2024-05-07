@@ -37,11 +37,9 @@ def detect_outliers(X: np.ndarray, method: OutlierDetectionMethod = "zscore", **
     in_ = X[indices].reshape(-1, 1)
     out_ = detector.fit_predict(in_)
 
-    # is_inlier = np.zeros_like(X, dtype=int)
     is_inlier = np.full_like(X, np.nan)
     is_inlier[indices] = out_.flatten()
 
-    # is_outlier = 1 - ((is_inlier + 1) / 2)
     is_outlier = is_inlier == -1
     return is_outlier
 

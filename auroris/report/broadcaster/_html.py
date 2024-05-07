@@ -1,144 +1,83 @@
-import fsspec
 import base64
-from typing import Optional
+import os
+import pathlib
+from copy import deepcopy
+from importlib import resources
 
 import datamol as dm
-from auroris.report import CurationReport, Section
+import fsspec
+
+from auroris.report import CurationReport
+from auroris.utils import img2bytes
 
 from ._base import ReportBroadcaster
+
+try:
+    import jinja2
+except ImportError:
+    jinja2 = None
 
 
 class HTMLBroadcaster(ReportBroadcaster):
     """Render a simple HTML page"""
 
-    def __init__(self, report: CurationReport, destination: str, title: Optional[str] = "Curation Report"):
+    def __init__(
+        self,
+        report: CurationReport,
+        destination: str,
+        embed_images: bool = False,
+    ):
         super().__init__(report)
 
+        if jinja2 is None:
+            raise ImportError(
+                f"Jinja2 is required to use {self.__class__.__name__}. Install it with `pip install Jinja2`."
+            )
+
         self._destination = destination
-        self._title = title
+        self._image_dir = dm.fs.join(self._destination, "images")
+        self._embed_images = embed_images
 
-        # Open the file
-        path = dm.fs.join(self._destination, "CuratioReport.html")
-        self._file_descriptor = fsspec.open(path, "w")
-        self._file = self._file_descriptor.__enter__()
+    def broadcast(self):
+        report = deepcopy(self._report)
 
-        # Count the images
-        self._image_count = 0
+        # Create destination dir.
+        dm.fs.mkdir(self._destination, exist_ok=True)
 
-    def on_logs_start(self):
-        # Start an unordered list
-        self._file.write("<h3>Logs</h3>")
-        self._file.write("<ul>")
+        # Create the directory for images
+        if not self._embed_images:
+            dm.fs.mkdir(self._image_dir, exist_ok=True)
 
-    def on_logs_end(self):
-        # Start an unordered list
-        self._file.write("</ul>")
+        pathlib.Path(__file__).parent.resolve() / "templates"
 
-    def on_images_start(self):
-        self._file.write("<h3>Images</h3>")
+        # Save all images
+        image_counter = 0
+        for section in report.sections:
+            for image in section.images:
+                if self._embed_images:
+                    # Encode directly into the HTML
+                    image_data = img2bytes(image.image)
+                    image_data = base64.b64encode(image_data).decode("utf-8")
+                    src = f"data:image/png;base64,{image_data}"
+                else:
+                    # Save as separate file
+                    path = dm.fs.join(self._image_dir, f"{image_counter}.png")
+                    image.image.save(path)
+                    src = os.path.relpath(path, self._destination)
 
-    def render_log(self, message: str):
-        # Write the log to the HTML
-        self._file.write(f"<li>{message}</li>")
+                image.image = src
+                image_counter += 1
 
-    def render_image(self, image: bytes):
-        # Encode the image data as Base64
-        encoded_image = base64.b64encode(image).decode("utf-8")
+        # Get HTML template file
+        path = resources.files("auroris.report.broadcaster.templates")
+        path = path.joinpath("report.html.jinja")
 
-        # Write image in an HTML img tag
-        self._file.write(f'<img src="data:image/png;base64,{encoded_image}"')
+        # Render the HTML
+        with path.open() as template_file:
+            template = jinja2.Template(template_file.read())
+        html = template.render(report=report)
 
-        # Increase counter
-        self._image_count += 1
-
-    def on_report_start(self, report: CurationReport):
-        self._file.write("<html>")
-        self._file.write("""
-            <head>
-                <meta charset="UTF-8">
-                <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                <title>Report Title</title>
-                <style>
-                    body {
-                        font-family: Arial, sans-serif;
-                        line-height: 1.6;
-                        margin: 0;
-                        padding: 0;
-                    }
-                    .container {
-                        max-width: 800px;
-                        margin: 20px auto;
-                        padding: 20px;
-                        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-                        background-color: #f9f9f9;
-                    }
-                    header {
-                        text-align: center;
-                        margin-bottom: 20px;
-                    }
-                    h1, h2, h3 {
-                        margin-bottom: 10px;
-                    }
-                    p {
-                        margin-bottom: 15px;
-                    }
-                    table {
-                        width: 100%;
-                        border-collapse: collapse;
-                        margin-bottom: 20px;
-                    }
-                    th, td {
-                        border: 1px solid #ddd;
-                        padding: 8px;
-                    }
-                    th {
-                        background-color: #f2f2f2;
-                    }
-                    footer {
-                        text-align: center;
-                        margin-top: 20px;
-                        color: #888;
-                    }
-                    img {
-                        max-width: 100%;
-                        height: auto;
-                        width: auto; /* ie8 */
-                    }
-                </style>
-            </head>
-        """)
-        self._file.write(
-            f"""
-        <body>
-            <div class="container">
-                <header>
-                    <h1>{self._title}</h1>
-                    <p>Time: {report.time_stamp.strftime('%Y-%m-%d %H:%M:%S')}</p>
-                    <p>Version: {report.auroris_version}</p>
-                </header>"""
-        )
-
-    def on_section_start(self, section: Section):
-        self._file.write(f"<h2>{section.title}</h2>")
-
-    def on_report_end(self, report: CurationReport):
-        self._file.write(
-            """
-                    <footer>
-                        <p>Generated by Auroris Data Curation</p>
-                    </footer>
-                </div>
-            </body>
-        </html>
-        """
-        )
-        self._file.write("")
-        self._file_descriptor.__exit__()
-
-    def on_image_start(self, message: str = "This is a title"):
-        # Add image title
-        self._file.write(f"<h4>{message}</h4>")
-
-    def on_image_end(self, message="This is a description"):
-        # Add image descriptions
-        self._file.write(f"<p>{message}</p>")
+        # Write the HTML
+        path = dm.fs.join(self._destination, "index.html")
+        with fsspec.open(path, "w") as fd:
+            fd.write(html)

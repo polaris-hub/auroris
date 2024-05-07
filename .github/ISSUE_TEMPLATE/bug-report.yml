@@ -7,10 +7,10 @@ body:
       value: |
         Please provide the following information.
   - type: input
-    id: alchemy-version
+    id: auroris-version
     attributes:
-      label: Alchemy version
-      description: Value of ``alchemy.__version__``
+      label: Auroris version
+      description: Value of ``auroris.__version__``
       placeholder: 0.2.5, 0.3.0, 0.3.1, etc.
     validations:
       required: true
@@ -34,7 +34,7 @@ body:
     id: installation
     attributes:
       label: Installation
-      description: How was Alchemy installed?
+      description: How was Auroris installed?
       placeholder: e.g., "using pip into virtual environment", or "using conda"
     validations:
       required: true
@@ -56,4 +56,4 @@ body:
     id: additional-output
     attributes:
       label: Additional output
-      description: If you think it might be relevant, please provide the output from ``pip freeze`` or ``conda env export`` depending on which was used to install Alchemy.
+      description: If you think it might be relevant, please provide the output from ``pip freeze`` or ``conda env export`` depending on which was used to install Auroris.

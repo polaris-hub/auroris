@@ -269,7 +269,7 @@ class MoleculeCuration(BaseAction):
                 X = np.array([dm.to_fp(smi) for smi in smiles])
 
             fig = visualize_chemspace(X=X)
-            report.log_image(fig, "Distribution in Chemical Space", "This is a test")
+            report.log_image(fig, "Distribution in Chemical Space")
 
             if self.count_stereocenters:
                 # Plot all compounds with undefined stereocenters for visual inspection

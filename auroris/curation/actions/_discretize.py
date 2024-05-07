@@ -1,4 +1,4 @@
-from typing import Dict, Literal, Optional, Union, List
+from typing import Dict, List, Literal, Optional, Union
 
 import numpy as np
 import pandas as pd
@@ -7,6 +7,7 @@ from sklearn.base import check_array
 from auroris.curation.actions._base import BaseAction
 from auroris.report import CurationReport
 from auroris.types import VerbosityLevel
+from auroris.visualization import visualize_continuous_distribution
 
 
 def discretize(
@@ -23,8 +24,7 @@ def discretize(
             scipy.sparse matrices should be in CSR or CSC format to avoid an
             un-necessary copy.
 
-        thresholds: Feature values below or equal to this are replaced by 0, above it by 1.
-            Threshold may not be less than 0 for operations on sparse matrices.
+        thresholds: Interval boundaries that include the right bin edge.
 
         inplace: Set to True to perform inplace discretization and avoid a copy
             (if the input is already a numpy array or a scipy.sparse CSR / CSC
@@ -82,6 +82,7 @@ class Discretization(BaseAction):
     inplace: bool = False
     allow_nan: bool = True
     label_order: Literal["ascending", "descending"] = "ascending"
+    log_scale: bool = True
 
     def transform(
         self,
@@ -98,6 +99,13 @@ class Discretization(BaseAction):
             allow_nan=self.allow_nan,
             label_order=self.label_order,
         )
+
+        fig = visualize_continuous_distribution(
+            data=dataset[self.input_column].values,
+            log_scale=self.log_scale,
+            bins=self.thresholds,
+        )
+        report.log_image(fig, title=self.input_column)
 
         column_name = self.get_column_name(self.input_column)
         dataset[column_name] = X

@@ -1,15 +1,14 @@
 import json
-from typing import List, Tuple, Union, Dict
+from typing import List, Tuple, Union
 
-from loguru import logger
 import fsspec
 import pandas as pd
+from loguru import logger
 from pydantic import BaseModel, Field, field_serializer, field_validator
 
-from auroris.curation.actions._base import ACTION_REGISTRY
+from auroris.curation.actions._base import ACTION_REGISTRY, BaseAction
 from auroris.report import CurationReport
 from auroris.types import VerbosityLevel
-from auroris.curation.actions._discretize import Discretization
 
 
 class Curator(BaseModel):
@@ -27,9 +26,6 @@ class Curator(BaseModel):
     verbosity: VerbosityLevel = VerbosityLevel.NORMAL
     parallelized_kwargs: dict = Field(default_factory=dict)
 
-    state: List[str] = []
-    _discretizers: Dict[str, Discretization] = {}
-
     @field_validator("verbosity", mode="before")
     def _validate_verbosity(cls, v):
         if not isinstance(v, VerbosityLevel):
@@ -42,30 +38,19 @@ class Curator(BaseModel):
 
     def transform(self, dataset: pd.DataFrame) -> Tuple[pd.DataFrame, CurationReport]:
         report = CurationReport()
-
         dataset = dataset.copy(deep=True)
+
+        action: BaseAction
         for action in self.steps:
             logger.info(f"Performing step: {action.name}")
-            if action._dep_action and action._dep_action not in self.state:
-                raise RuntimeError(f"{action._dep_action} should be called before {action.name}.")
+
             with report.section(action.name):
-                kwargs = {}
-
-                if action.name == "Discretization":
-                    self._discretizers[action.input_column] = action
-
-                if action.name == "DataDistribution":
-                    kwargs = {"discretizers": self._discretizers}
-
                 dataset = action.transform(
                     dataset,
                     report=report,
                     verbosity=self.verbosity,
                     parallelized_kwargs=self.parallelized_kwargs,
-                    **kwargs,
                 )
-                action.completed = True
-                self.state.append(action.name)
 
         return dataset, report
 

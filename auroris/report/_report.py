@@ -1,26 +1,26 @@
 from contextlib import contextmanager
 from datetime import datetime
-from typing import List, Optional, Union, ByteString
+from typing import ByteString, List, Optional, Union
 
 from matplotlib import pyplot as plt
 from matplotlib.figure import Figure
 from PIL.Image import Image as ImageType
 from pydantic import BaseModel, ConfigDict, Field, PrivateAttr
-from IPython.core.display import Image as IPy_Image
-from PIL.PngImagePlugin import PngImageFile
 
 from auroris import __version__
-from auroris.utils import fig2bytes, png2bytes
+from auroris.utils import fig2img
 
 
-class Image(BaseModel):
+class AnnotatedImage(BaseModel):
     """
-    A image subsection in a report
+    Image data, potentially with a title and / or description.
     """
 
-    image_data: bytes
-    title: str
-    description: str
+    image: ImageType
+    title: Optional[str] = ""
+    description: Optional[str] = ""
+
+    model_config = ConfigDict(arbitrary_types_allowed=True)
 
 
 class Section(BaseModel):
@@ -30,9 +30,7 @@ class Section(BaseModel):
 
     title: str
     logs: List[str] = Field(default_factory=list)
-    images: List[Image] = Field(default_factory=list)
-
-    model_config = ConfigDict(arbitrary_types_allowed=True)
+    images: List[AnnotatedImage] = Field(default_factory=list)
 
 
 class CurationReport(BaseModel):
@@ -40,6 +38,7 @@ class CurationReport(BaseModel):
     A report that summarizes the changes of the curation process.
     """
 
+    title: str = "Curation Report"
     sections: List[Section] = Field(default_factory=list)
     auroris_version: str = Field(default=__version__)
     time_stamp: datetime = Field(default_factory=datetime.now)
@@ -63,6 +62,7 @@ class CurationReport(BaseModel):
 
     def log(self, message: str):
         """Log a message to the report"""
+        self._check_active_section()
         self._active_section.logs.append(message)
 
     def log_new_column(self, name: str):
@@ -70,20 +70,22 @@ class CurationReport(BaseModel):
         self.log(f"New column added: {name}")
 
     def log_image(
-        self, image_or_figure: Union[ImageType, Figure, ByteString], title: str = "", description: str = ""
+        self,
+        image_or_figure: Union[ImageType, Figure, ByteString],
+        title: Optional[str] = None,
+        description: Optional[str] = None,
     ):
         """Logs an image. Also accepts Matplotlib figures, which will be converted to images."""
-
-        if isinstance(image_or_figure, IPy_Image):
-            image_data = image_or_figure.data
-
-        elif isinstance(image_or_figure, Figure):
-            image_data = fig2bytes(image_or_figure)
+        self._check_active_section()
+        if isinstance(image_or_figure, Figure):
+            image = fig2img(image_or_figure)
             plt.close(image_or_figure)
-        elif isinstance(image_or_figure, PngImageFile):
-            image_data = png2bytes(image_or_figure)
         else:
-            image_data = image_or_figure
+            image = image_or_figure
 
-        image = Image(image_data=image_data, title=title, description=description)
+        image = AnnotatedImage(image=image, title=title, description=description)
         self._active_section.images.append(image)
+
+    def _check_active_section(self):
+        if self._active_section is None:
+            raise RuntimeError("No active section. Use `with report.section(name):`")

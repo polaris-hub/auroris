@@ -4,6 +4,11 @@ from auroris.curation import Curator
 from auroris.curation.actions import Discretization, MoleculeCuration, OutlierDetection
 from auroris.report.broadcaster import HTMLBroadcaster, LoggerBroadcaster
 
+try:
+    import jinja2
+except ImportError:
+    jinja2 = None
+
 
 def test_curator_save_load(tmpdir):
     curator = Curator(
@@ -35,5 +40,6 @@ def test_curator_integration(dataset, tmpdir):
     broadcaster = LoggerBroadcaster(report)
     broadcaster.broadcast()
 
-    broadcaster = HTMLBroadcaster(report, tmpdir)
-    broadcaster.broadcast()
+    if jinja2:
+        broadcaster = HTMLBroadcaster(report, tmpdir)
+        broadcaster.broadcast()

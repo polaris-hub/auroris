@@ -43,9 +43,8 @@ def detect_streoisomer_activity_cliff(
             ac_cols[y_col].extend([ac] * len(group))
 
     for y_col in y_cols:
-        dataset_ori.loc[group_index_list.flatten(), f"{prefix}{y_col}"] = np.array(ac_cols[y_col]).astype(
-            bool
-        )
+        rows = group_index_list.flatten()
+        dataset_ori.loc[rows, f"{prefix}{y_col}"] = np.array(ac_cols[y_col]).astype(bool)
 
     return dataset_ori
 
@@ -55,12 +54,11 @@ class StereoIsomerACDetection(BaseAction):
     Automatic detection of outliers.
     """
 
-    stereoisomer_id_col: Optional[str] = "MOL_molhash_id_no_stereo"
-    y_cols: Optional[List[str]] = None
+    stereoisomer_id_col: str
+    y_cols: List[str]
     threshold: float = 2.0
     prefix: str = "AC_"
     mol_col: str = "MOL_smiles"
-    _dep_action = "MoleculeCuration"
 
     def transform(
         self,

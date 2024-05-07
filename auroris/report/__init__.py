@@ -1,3 +1,3 @@
-from ._report import CurationReport, Section
+from ._report import AnnotatedImage, CurationReport, Section
 
-__all__ = ["CurationReport", "Section"]
+__all__ = ["CurationReport", "Section", "AnnotatedImage"]

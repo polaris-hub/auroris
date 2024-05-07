@@ -2,9 +2,9 @@ from ._ac_stereoisomer import StereoIsomerACDetection
 from ._base import BaseAction
 from ._deduplicate import Deduplication
 from ._discretize import Discretization
+from ._distribution import ContinuousDistributionVisualization
 from ._mol import MoleculeCuration
 from ._outlier import OutlierDetection
-from ._distribution import DataDistribution
 
 __all__ = [
     "BaseAction",
@@ -13,5 +13,5 @@ __all__ = [
     "Deduplication",
     "Discretization",
     "StereoIsomerACDetection",
-    "DataDistribution",
+    "ContinuousDistributionVisualization",
 ]

@@ -1,51 +1,83 @@
-from typing import List, Optional
+from typing import List, Optional, Sequence
 
 import numpy as np
-import pandas as pd
 import seaborn as sns
-from loguru import logger
 from scipy import stats
-import matplotlib.pyplot as plt
 
 from auroris.visualization.utils import create_figure
 
 
-def detailed_distributions_plots(
-    data: pd.DataFrame, label_name: str, sections: Optional[List[dict]] = None, log_scale: bool = False
+def visualize_continuous_distribution(
+    data: np.ndarray, log_scale: bool = False, bins: Optional[Sequence[float]] = None
 ):
     """
     KDE plot the distribution of the column in `data` with colored sections under the KDE curve.
+
     Args:
-        df: A dataframe with binarized readouts only. NaN are allowed.
-        label_name: Name of the labels (same order as the columns in `df`). If not set the name of the columns are used.
-        log_scale: Whether set axis scale(s) to log.
+        data: A 1D numpy array with the values to plot the distribution for.
+        log_scale: Whether to plot the x-axis in log scale.
+        bins: The bin boundaries to color the area under the KDE curve.
     """
     # Create a KDE plot without filling
-    fig = sns.kdeplot(data, color="black", linewidth=1.5, label="KDE Curve", log_scale=log_scale)
+    with create_figure(n_plots=1) as (fig, axs):
+        ax = sns.kdeplot(data, ax=axs[0], log_scale=log_scale, color="black", linewidth=1.5)
 
-    # Calculate KDE values for filling sections
-    try:
-        kde_values = sns.kdeplot(data).get_lines()[0].get_data()
-    except Exception as e:
-        logger.exception(e)
-        if log_scale:
-            logger.exception(
-                "The current error is likely due to the `log_scale` was enabled. Please disable the `log_scale` and try again."
-            )
+    if bins is None:
+        return fig
 
-    # Fill the sections under the KDE curve
-    if sections is not None and len(sections) > 0:
-        for section in sections:
-            mask = (kde_values[0] >= section["start"]) & (kde_values[0] <= section["end"])
-            plt.fill_between(kde_values[0][mask], kde_values[1][mask], alpha=0.5, label=section["label"])
+    # Get the xy coordinates of the plotted KDE line
+    coords = ax.get_lines()[0].get_data()
+    xs = coords[0]
+    ys = coords[1]
 
-    # Add a legend
-    plt.legend()
+    # Setup the bins
+    bins = np.sort(bins)
+    bins = np.append(bins, np.inf)
+    lower = -np.inf
 
-    # Show the plot
-    plt.xlabel(label_name)
-    plt.ylabel("Density")
-    return fig.figure
+    ylim = ax.get_ylim()
+
+    # Color the area under the KDE curve in accordance with the bins
+    # Also added a vertical dashed line for each bin boundary
+    for threshold in bins:
+        if log_scale and lower != -np.inf:
+            lower = np.log(lower)
+        if log_scale and threshold != np.inf:
+            threshold = np.log(threshold)
+
+        mask = (xs > lower) & (xs <= threshold)
+        lower = threshold
+
+        # Update xs to make sure they cover the range even if the
+        # coordinates don't fully cover it
+        masked_xs = xs[mask]
+
+        if len(masked_xs) == 0:
+            continue
+
+        masked_xs[0] = max(lower, np.min(xs))
+        masked_xs[-1] = threshold
+
+        pct_mask = (data > lower) & (data <= threshold)
+        pct = np.sum(pct_mask) / len(data)
+
+        def _format(val):
+            if val == -np.inf:
+                return "-∞"
+            elif val == np.inf:
+                return "∞"
+            else:
+                return f"{val:.2f}"
+
+        label = f"{_format(lower)}, {_format(threshold)}"
+        label = f"({label})" if threshold == np.inf else f"({label}]"
+        label += f" - {pct:.2%}"
+
+        ax.fill_between(masked_xs, ys[mask], alpha=0.5, label=label)
+        ax.plot([threshold, threshold], [ylim[0], ys[mask][-1]], "k--")
+
+    ax.legend()
+    return fig
 
 
 def visualize_distribution_with_outliers(
