@@ -1,10 +1,6 @@
-import io
 import fsspec
 import base64
 from typing import Optional
-from PIL import Image as PILImage
-from PIL.Image import Image as ImageType
-from IPython.core.display import Image as IPy_Image
 
 import datamol as dm
 from auroris.report import CurationReport, Section
@@ -121,9 +117,6 @@ class HTMLBroadcaster(ReportBroadcaster):
                     <p>Version: {report.auroris_version}</p>
                 </header>"""
         )
-        # self._file.write("<h1>Curation Report</h1>")
-        # self._file.write(f"<p>Time: {report.time_stamp.strftime('%Y-%m-%d %H:%M:%S')}</p>")
-        # self._file.write(f"<p>Version: {report.auroris_version}</p>")
 
     def on_section_start(self, section: Section):
         self._file.write(f"<h2>{section.title}</h2>")

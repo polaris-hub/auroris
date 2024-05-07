@@ -1,12 +1,11 @@
 from typing import Dict, List, Optional
 import pandas as pd
-from pydantic import Field, PrivateAttr
+from pydantic import Field
 import numpy as np
 
 from auroris.curation.actions._base import BaseAction
 from auroris.report import CurationReport
 from auroris.types import VerbosityLevel
-from auroris.curation.actions._discretize import Discretization
 from auroris.visualization import detailed_distributions_plots
 
 

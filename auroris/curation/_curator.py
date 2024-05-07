@@ -46,7 +46,7 @@ class Curator(BaseModel):
         dataset = dataset.copy(deep=True)
         for action in self.steps:
             logger.info(f"Performing step: {action.name}")
-            if action._dep_action and not action._dep_action in self.state:
+            if action._dep_action and action._dep_action not in self.state:
                 raise RuntimeError(f"{action._dep_action} should be called before {action.name}.")
             with report.section(action.name):
                 kwargs = {}

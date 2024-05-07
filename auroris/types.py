@@ -1,5 +1,4 @@
 from enum import IntEnum
-from PIL.Image import Image
 
 
 class VerbosityLevel(IntEnum):

@@ -3,7 +3,6 @@ from matplotlib.figure import Figure
 from PIL import Image
 from PIL.Image import Image as ImageType
 from sklearn.utils.multiclass import type_of_target
-import matplotlib.pyplot as plt
 from matplotlib.backends.backend_agg import FigureCanvasAgg
 from io import BytesIO
 
