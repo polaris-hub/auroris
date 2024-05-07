@@ -1,4 +1,4 @@
-from typing import Dict, Literal, Optional, Union
+from typing import Dict, Literal, Optional, Union, List
 
 import numpy as np
 import pandas as pd
@@ -7,7 +7,7 @@ from sklearn.base import check_array
 from auroris.curation.actions._base import BaseAction
 from auroris.report import CurationReport
 from auroris.types import VerbosityLevel
-from auroris.visualization._distribution import distribution_with_class
+from auroris.visualization._distribution import detailed_distributions_plots
 
 
 def discretize(
@@ -79,7 +79,7 @@ def discretize(
 class Discretization(BaseAction):
     input_column: str
     prefix: str = "CLS_"
-    thresholds: list
+    thresholds: List[float]
     inplace: bool = False
     allow_nan: bool = True
     label_order: Literal["ascending", "descending"] = "ascending"
@@ -105,19 +105,19 @@ class Discretization(BaseAction):
 
         if report is not None:
             report.log_new_column(column_name)
-            sections = []
-            low = -np.inf
-            high = np.inf
+            # sections = []
+            # low = -np.inf
+            # high = np.inf
 
-            for i, threshold in enumerate(self.thresholds + [high]):
-                if self.label_order == "descending":
-                    i = len(self.thresholds) - i
-                pct = 100 * sum(X == i) / len(X)
-                sections.append(
-                    {"label": f"{column_name} {i} = {pct:.1f} %", "start": low, "end": threshold, "pct": pct}
-                )
-                low = threshold
-            fig = distribution_with_class(data=dataset[self.input_column], sections=sections)
-            report.log_image(fig, title="Data class distribution")
+            # for i, threshold in enumerate(self.thresholds + [high]):
+            #     if self.label_order == "descending":
+            #         i = len(self.thresholds) - i
+            #     pct = 100 * sum(X == i) / len(X)
+            #     sections.append(
+            #         {"label": f"{column_name} = {i}: {pct:.1f} %", "start": low, "end": threshold, "pct": pct}
+            #     )
+            #     low = threshold
+            # fig = detailed_distributions_plots(data=dataset[self.input_column], label_name=self.input_column, sections=sections)
+            # report.log_image(fig, title="Data class distribution")
 
         return dataset

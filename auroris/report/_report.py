@@ -7,9 +7,10 @@ from matplotlib.figure import Figure
 from PIL.Image import Image as ImageType
 from pydantic import BaseModel, ConfigDict, Field, PrivateAttr
 from IPython.core.display import Image as IPy_Image
+from PIL.PngImagePlugin import PngImageFile
 
 from auroris import __version__
-from auroris.utils import fig2bytes
+from auroris.utils import fig2bytes, png2bytes
 
 
 class Image(BaseModel):
@@ -79,6 +80,8 @@ class CurationReport(BaseModel):
         elif isinstance(image_or_figure, Figure):
             image_data = fig2bytes(image_or_figure)
             plt.close(image_or_figure)
+        elif isinstance(image_or_figure, PngImageFile):
+            image_data = png2bytes(image_or_figure)
         else:
             image_data = image_or_figure
 

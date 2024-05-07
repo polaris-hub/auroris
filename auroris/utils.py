@@ -33,8 +33,20 @@ def fig2bytes(fig):
     buffer = BytesIO()
     canvas = FigureCanvasAgg(fig)
     canvas.print_png(buffer)
-
     # Get the bytes data
     image_data = buffer.getvalue()
-
     return image_data
+
+
+def png2bytes(image):
+    """Convert png image to bytes"""
+    image_bytes = BytesIO()
+    image.save(image_bytes, format="PNG")
+    image_bytes = image_bytes.getvalue()
+    return image_bytes
+
+
+def get_image_dimension(image_bytes):
+    """Get image dismentsion from image bytes"""
+    image = Image.open(BytesIO(image_bytes))
+    return image.size

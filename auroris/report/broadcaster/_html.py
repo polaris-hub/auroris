@@ -22,7 +22,7 @@ class HTMLBroadcaster(ReportBroadcaster):
         self._title = title
 
         # Open the file
-        path = dm.fs.join(self._destination)
+        path = dm.fs.join(self._destination, "CuratioReport.html")
         self._file_descriptor = fsspec.open(path, "w")
         self._file = self._file_descriptor.__enter__()
 

@@ -1,11 +1,13 @@
 import logging
 import sys
 
+from typing import Union
 from PIL.Image import Image as ImageType
 
 from auroris.report import CurationReport, Section
 
 from ._base import ReportBroadcaster
+from auroris.utils import get_image_dimension
 
 
 class ColoredFormatter(logging.Formatter):
@@ -48,8 +50,12 @@ class LoggerBroadcaster(ReportBroadcaster):
     def render_log(self, message: str):
         self.logger.debug(f"[LOG]: {message}")
 
-    def render_image(self, image: ImageType):
-        self.logger.debug(f"[IMG]: Dimensions {image.width} x {image.height}")
+    def render_image(self, image: Union[ImageType, bytes]):
+        if isinstance(image, bytes):
+            width, height = get_image_dimension(image)
+        else:
+            width, height = image.width, image.height
+        self.logger.debug(f"[IMG]: Dimensions {width} x {height}")
 
     def on_section_start(self, section: Section):
         self.logger.info(f"===== {section.title} =====")
@@ -58,3 +64,9 @@ class LoggerBroadcaster(ReportBroadcaster):
         self.logger.critical("===== Curation Report =====")
         self.logger.debug(f"Time: {report.time_stamp.strftime('%Y-%m-%d %H:%M:%S')}")
         self.logger.debug(f"Version: {report.auroris_version}")
+
+    def on_image_start(self, message: str = None):
+        pass
+
+    def on_image_end(self, message: str = None):
+        pass

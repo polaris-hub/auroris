@@ -1,6 +1,7 @@
 import json
-from typing import List, Tuple, Union
+from typing import List, Tuple, Union, Dict
 
+from loguru import logger
 import fsspec
 import pandas as pd
 from pydantic import BaseModel, Field, field_serializer, field_validator
@@ -8,6 +9,7 @@ from pydantic import BaseModel, Field, field_serializer, field_validator
 from auroris.curation.actions._base import ACTION_REGISTRY
 from auroris.report import CurationReport
 from auroris.types import VerbosityLevel
+from auroris.curation.actions._discretize import Discretization
 
 
 class Curator(BaseModel):
@@ -26,6 +28,7 @@ class Curator(BaseModel):
     parallelized_kwargs: dict = Field(default_factory=dict)
 
     state: List[str] = []
+    _discretizers: Dict[str, Discretization] = {}
 
     @field_validator("verbosity", mode="before")
     def _validate_verbosity(cls, v):
@@ -42,14 +45,24 @@ class Curator(BaseModel):
 
         dataset = dataset.copy(deep=True)
         for action in self.steps:
+            logger.info(f"Performing step: {action.name}")
             if action._dep_action and not action._dep_action in self.state:
                 raise RuntimeError(f"{action._dep_action} should be called before {action.name}.")
             with report.section(action.name):
+                kwargs = {}
+
+                if action.name == "Discretization":
+                    self._discretizers[action.input_column] = action
+
+                if action.name == "DataDistribution":
+                    kwargs = {"discretizers": self._discretizers}
+
                 dataset = action.transform(
                     dataset,
                     report=report,
                     verbosity=self.verbosity,
                     parallelized_kwargs=self.parallelized_kwargs,
+                    **kwargs,
                 )
                 action.completed = True
                 self.state.append(action.name)
@@ -78,3 +91,4 @@ class Curator(BaseModel):
         """
         with fsspec.open(path, "w") as f:
             json.dump(self.model_dump(), f)
+        return path
