@@ -43,6 +43,15 @@ class LoggerBroadcaster(ReportBroadcaster):
             self.logger.removeHandler(handler)
         self.logger.addHandler(handler)
 
+    def broadcast(self):
+        self.on_report_start(self._report)
+        for section in self._report.sections:
+            self.on_section_start(section)
+            for log in section.logs:
+                self.render_log(log)
+            for image in section.images:
+                self.render_image(image)
+
     def render_log(self, message: str):
         self.logger.debug(f"[LOG]: {message}")
 
