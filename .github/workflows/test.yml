@@ -52,7 +52,7 @@ jobs:
         run: pytest
 
       - name: Test CLI
-        run: alchemy --help
+        run: auroris --help
 
       - name: Test building the doc
         run: mkdocs build
