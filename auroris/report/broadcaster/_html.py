@@ -57,9 +57,7 @@ class HTMLBroadcaster(ReportBroadcaster):
 
     def on_report_start(self, report: CurationReport):
         self._file.write("<html>")
-        # self._file.write("<head><style>body{font-family: Arial, sans-serif;}</style></head>")
-        self._file.write(
-            """
+        self._file.write("""
             <head>
                 <meta charset="UTF-8">
                 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -108,12 +106,11 @@ class HTMLBroadcaster(ReportBroadcaster):
                     img {
                         max-width: 100%;
                         height: auto;
-                        width: auto\9; /* ie8 */
+                        width: auto; /* ie8 */
                     }
                 </style>
             </head>
-        """
-        )
+        """)
         self._file.write(
             f"""
         <body>

@@ -18,17 +18,18 @@ def detect_streoisomer_activity_cliff(
     threshold: float = 1.0,
     prefix: str = "AC_",
 ):
+    dataset_ori = dataset.copy(deep=True)
     ac_cols = {y_col: [] for y_col in y_cols}
-    groups = {y_col: [] for y_col in y_cols}
-
-    dataset = dataset.reset_index(drop=True)
-    groups = {}
+    group_index_list = np.array(
+        [group.index.values for _, group in dataset.groupby(stereoisomer_id_col, sort=False)]
+    )
     for y_col in y_cols:
         is_reg = is_regression(dataset[y_col].dropna().values)
         if is_reg:
             y_zscores = modified_zscore(dataset[y_col].values)
-            # import pdb; pdb.set_trace()
-        for _, group in dataset.groupby(stereoisomer_id_col):
+
+        for group_index in group_index_list:
+            group = dataset.iloc[group_index, :]
             if len(group) == 1:
                 ac = None
             else:
@@ -41,13 +42,12 @@ def detect_streoisomer_activity_cliff(
                     ac = len(np.unique(group[y_col].values)) > 1
             ac_cols[y_col].extend([ac] * len(group))
 
-            # groups[y_col].extend(group)
-
-    # dataset = pd.concat(groups)
     for y_col in y_cols:
-        dataset[f"{prefix}{y_col}"] = ac_cols[y_col]
+        dataset_ori.loc[group_index_list.flatten(), f"{prefix}{y_col}"] = np.array(ac_cols[y_col]).astype(
+            bool
+        )
 
-    return dataset.sort_index()
+    return dataset_ori
 
 
 class StereoIsomerACDetection(BaseAction):
