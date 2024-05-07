@@ -3,7 +3,7 @@ requires = ["setuptools", "setuptools-scm"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "auroris-lib"
+name = "auroris"
 description = "Data Curation in Polaris"
 dynamic = ["version"]
 authors = [
