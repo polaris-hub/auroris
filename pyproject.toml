@@ -1,0 +1,120 @@
+[build-system]
+requires = ["setuptools", "setuptools-scm"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "auroris"
+description = "Data Curation in Polaris"
+dynamic = ["version"]
+authors = [
+    { name = "Lu Zhu", email = "lu@valencediscovery.com" },
+    { name = "Julien St-Laurent", email = "julien.stl@valencediscovery.com" },
+    { name = "Cas Wognum", email = "cas@valencediscovery.com" },
+]
+readme = "README.md"
+requires-python = ">=3.10"
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Healthcare Industry",
+    "Intended Audience :: Science/Research",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Topic :: Scientific/Engineering :: Bio-Informatics",
+    "Topic :: Scientific/Engineering :: Information Analysis",
+    "Topic :: Scientific/Engineering :: Medical Science Apps.",
+    "Natural Language :: English",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+]
+dependencies = [
+    "tqdm",
+    "loguru",
+    "typer",
+    "pydantic >=2",
+    "numpy",
+    "pandas < 2.2.0",
+    "scipy",
+    "scikit-learn",
+    "seaborn",
+    "datamol >=0.12.1",
+    "pillow",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest",
+    "pytest-xdist",
+    "pytest-cov",
+    "ruff",
+    "jupyterlab",
+    "ipywidgets"
+]
+doc = [
+    "mkdocs",
+    "mkdocs-material >=9.4.7",
+    "mkdocstrings",
+    "mkdocstrings-python",
+    "mkdocs-jupyter",
+    "markdown-include",
+    "mdx_truly_sane_lists",
+    "nbconvert",
+    "mike >=1.0.0"
+]
+
+[project.scripts]
+auroris = "auroris.cli:app"
+
+[project.urls]
+Website = "https://polarishub.io/"
+"Source Code" = "https://github.com/polaris-hub/auroris"
+"Bug Tracker" = "https://github.com/polaris-hub/auroris/issues"
+Documentation = "https://polaris-hub.github.io/auroris/"
+
+[tool.setuptools]
+include-package-data = true
+
+[tool.setuptools_scm]
+fallback_version = "dev"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["auroris", "auroris.*"]
+exclude = []
+namespaces = false
+
+[tool.pytest.ini_options]
+minversion = "7.0"
+addopts = "--verbose --durations=10 -n auto --cov=auroris --cov-fail-under=75 --cov-report xml --cov-report term"
+testpaths = ["tests"]
+pythonpath = "."
+filterwarnings = ["ignore::DeprecationWarning:jupyter_client.connect.*:"]
+
+[tool.coverage.run]
+source = ["auroris/"]
+disable_warnings = ["no-data-collected"]
+data_file = ".coverage/coverage"
+
+[tool.coverage.report]
+omit = [
+    "auroris/__init__.py",
+    "auroris/_version.py",
+]
+
+[tool.coverage.xml]
+output = "coverage.xml"
+
+[tool.ruff]
+lint.ignore = [
+    "E501", # Never enforce `E501` (line length violations).
+]
+line-length = 110
+target-version = "py310"
+
+lint.per-file-ignores."__init__.py" = [
+    "F401", # imported but unused
+    "E402", # Module level import not at top of file
+]

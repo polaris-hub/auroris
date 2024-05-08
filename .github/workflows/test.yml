@@ -1,0 +1,63 @@
+name: test
+
+on:
+  push:
+    branches: ["main"]
+    tags: ["*"]
+  pull_request:
+    branches:
+      - "*"
+      - "!gh-pages"
+  schedule:
+    - cron: "0 4 * * MON"
+
+jobs:
+  test:
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.10", "3.11", "3.12"]
+
+    runs-on: "ubuntu-latest"
+    timeout-minutes: 30
+
+    defaults:
+      run:
+        shell: bash -l {0}
+
+    name: |
+      python=${{ matrix.python-version }}
+
+    steps:
+      - name: Checkout the code
+        uses: actions/checkout@v4
+
+      - name: Setup mamba
+        uses: mamba-org/setup-micromamba@v1
+        with:
+          environment-file: env.yml
+          environment-name: my_env
+          cache-environment: true
+          cache-downloads: true
+          create-args: >-
+            python=${{ matrix.python-version }}
+
+      - name: Install library
+        run: |
+          python -m pip install --no-deps .
+          # Note: Temporarily upgrade mkdocs-jupyter through PyPi
+          # See https://github.com/conda-forge/mkdocs-jupyter-feedstock/pull/30
+          python -m pip install mkdocs-jupyter -U --force-reinstall
+
+
+      - name: Install UMAP
+        run: python -m pip install umap-learn  # Optional dependency
+
+      - name: Run tests
+        run: pytest
+
+      - name: Test CLI
+        run: auroris --help
+
+      - name: Test building the doc
+        run: mkdocs build
