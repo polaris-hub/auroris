@@ -36,7 +36,7 @@ dataset, report = curator(dataset)
 
 ## Documentation
 
-Please refer to the [documentation](https://polaris-hub.github.io/polaris/), which contains tutorials for getting started with `polaris` and detailed descriptions of the functions provided.
+Please refer to the [documentation](https://polaris-hub.github.io/auroris/), which contains tutorials for getting started with `auroris` and detailed descriptions of the functions provided.
 
 ## Installation
 
