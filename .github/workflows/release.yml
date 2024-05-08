@@ -104,7 +104,7 @@ jobs:
           python -m pip install --no-deps .
           # Note: Temporarily upgrade mkdocs-jupyter through PyPi
           # See https://github.com/conda-forge/mkdocs-jupyter-feedstock/pull/29
-          python -m pip install mkdocs-jupyter -U
+          python -m pip install mkdocs-jupyter -U --force-reinstall
 
       - name: Build the wheel and sdist
         run: python -m build --no-isolation
