@@ -2,9 +2,12 @@ from contextlib import contextmanager
 from datetime import datetime
 from typing import ByteString, List, Optional, Union
 
+from io import BytesIO
 from matplotlib import pyplot as plt
 from matplotlib.figure import Figure
 from PIL.Image import Image as ImageType
+from PIL import Image as PILImage
+from IPython.core.display import Image as IpythonImage
 from pydantic import BaseModel, ConfigDict, Field, PrivateAttr
 
 from auroris import __version__
@@ -71,13 +74,15 @@ class CurationReport(BaseModel):
 
     def log_image(
         self,
-        image_or_figure: Union[ImageType, Figure, ByteString],
+        image_or_figure: Union[ImageType, Figure, ByteString, IpythonImage],
         title: Optional[str] = None,
         description: Optional[str] = None,
     ):
         """Logs an image. Also accepts Matplotlib figures, which will be converted to images."""
         self._check_active_section()
-        if isinstance(image_or_figure, Figure):
+        if isinstance(image_or_figure, IpythonImage):
+            image = PILImage.open(BytesIO(image_or_figure.data))
+        elif isinstance(image_or_figure, Figure):
             image = fig2img(image_or_figure)
             plt.close(image_or_figure)
         else:
