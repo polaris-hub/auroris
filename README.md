@@ -33,3 +33,57 @@ curator = Curator(
 # Run the curation
 dataset, report = curator(dataset)
 ```
+
+## Documentation
+
+Please refer to the [documentation](https://polaris-hub.github.io/polaris/), which contains tutorials for getting started with `polaris` and detailed descriptions of the functions provided.
+
+## Installation
+
+You can install `polaris` using conda/mamba/micromamba:
+
+```bash
+conda install -c conda-forge auroris
+```
+
+You can also use pip:
+
+```bash
+pip install auroris
+```
+
+## Development lifecycle
+
+### Setup dev environment
+
+```shell
+conda env create -n auroris -f env.yml
+conda activate auroris
+
+pip install --no-deps -e .
+```
+
+<details>
+  <summary>Other installation options</summary>
+  
+    Alternatively, using [uv](https://github.com/astral-sh/uv):
+    ```shell
+    uv venv -p 3.12 auroris
+    source .venv/auroris/bin/activate
+    uv pip compile pyproject.toml -o requirements.txt --all-extras
+    uv pip install -r requirements.txt 
+    ```   
+</details>
+
+
+### Tests
+
+You can run tests locally with:
+
+```shell
+pytest
+```
+
+## License
+
+Under the Apache-2.0 license. See [LICENSE](LICENSE).
