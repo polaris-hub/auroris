@@ -42,11 +42,11 @@ def visualize_continuous_distribution(
     for threshold in bins:
         if log_scale and lower != -np.inf:
             lower = np.log(lower)
+
         if log_scale and threshold != np.inf:
             threshold = np.log(threshold)
 
         mask = (xs > lower) & (xs <= threshold)
-        lower = threshold
 
         # Update xs to make sure they cover the range even if the
         # coordinates don't fully cover it
@@ -75,6 +75,7 @@ def visualize_continuous_distribution(
 
         ax.fill_between(masked_xs, ys[mask], alpha=0.5, label=label)
         ax.plot([threshold, threshold], [ylim[0], ys[mask][-1]], "k--")
+        lower = threshold
 
     ax.legend()
     return fig

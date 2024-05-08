@@ -82,7 +82,7 @@ class Discretization(BaseAction):
     inplace: bool = False
     allow_nan: bool = True
     label_order: Literal["ascending", "descending"] = "ascending"
-    log_scale: bool = True
+    log_scale: bool = False
 
     def transform(
         self,
