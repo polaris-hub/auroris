@@ -1,3 +1,5 @@
+from io import BytesIO
+
 import numpy as np
 from matplotlib.figure import Figure
 from PIL import Image
@@ -19,7 +21,15 @@ def fig2img(fig: Figure) -> ImageType:
     """Convert a Matplotlib figure to a PIL Image"""
     fig.canvas.draw()
     return Image.frombytes(
-        "RGB",
+        "RGBA",
         fig.canvas.get_width_height(),
-        fig.canvas.tostring_rgb(),
+        fig.canvas.buffer_rgba(),
     )
+
+
+def img2bytes(image: ImageType):
+    """Convert png image to bytes"""
+    image_bytes = BytesIO()
+    image.save(image_bytes, format="PNG")
+    image_bytes = image_bytes.getvalue()
+    return image_bytes

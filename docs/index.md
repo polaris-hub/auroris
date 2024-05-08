@@ -1,4 +1,4 @@
 # Introduction
 
-Welcome to the Alchemy documentation!
+Welcome to the Auroris documentation!
 

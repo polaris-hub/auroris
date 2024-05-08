@@ -1,4 +1,4 @@
-# Alchemy
+# Auroris
 
 Tools for data curation in the Polaris ecosystem. 
 
@@ -6,8 +6,8 @@ Tools for data curation in the Polaris ecosystem.
 ### Getting started
 
 ```python
-from alchemy.curation import Curator
-from alchemy.curation.actions import MoleculeCuration, OutlierDetection, Discretization
+from auroris.curation import Curator
+from auroris.curation.actions import MoleculeCuration, OutlierDetection, Discretization
 
 # Define the curation workflow
 curator = Curator(

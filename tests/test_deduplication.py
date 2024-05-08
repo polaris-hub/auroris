@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
 
-from alchemy.curation.functional import deduplicate
+from auroris.curation.functional import deduplicate
 
 
 def test_deduplicate():

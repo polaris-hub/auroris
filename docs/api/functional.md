@@ -1,4 +1,4 @@
 
-::: alchemy.curation.functional
+::: auroris.curation.functional
     options:
         filters: ["!^_"]

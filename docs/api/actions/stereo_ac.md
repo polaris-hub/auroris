@@ -1,4 +1,4 @@
 
-::: alchemy.curation.actions.StereoIsomerACDetection
+::: auroris.curation.actions.StereoIsomerACDetection
     options:
         filters: ["!^_"]

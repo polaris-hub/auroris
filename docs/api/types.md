@@ -1,3 +1,3 @@
-::: alchemy.types
+::: auroris.types
     options:
         filters: ["!^_"]

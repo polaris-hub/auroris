@@ -1,9 +1,7 @@
 import logging
 import sys
 
-from PIL.Image import Image as ImageType
-
-from alchemy.report import CurationReport, Section
+from auroris.report import AnnotatedImage, CurationReport, Section
 
 from ._base import ReportBroadcaster
 
@@ -45,11 +43,21 @@ class LoggerBroadcaster(ReportBroadcaster):
             self.logger.removeHandler(handler)
         self.logger.addHandler(handler)
 
+    def broadcast(self):
+        self.on_report_start(self._report)
+        for section in self._report.sections:
+            self.on_section_start(section)
+            for log in section.logs:
+                self.render_log(log)
+            for image in section.images:
+                self.render_image(image)
+
     def render_log(self, message: str):
         self.logger.debug(f"[LOG]: {message}")
 
-    def render_image(self, image: ImageType):
-        self.logger.debug(f"[IMG]: Dimensions {image.width} x {image.height}")
+    def render_image(self, image: AnnotatedImage):
+        width, height = image.image.size
+        self.logger.debug(f"[IMG]: Dimensions {width} x {height}")
 
     def on_section_start(self, section: Section):
         self.logger.info(f"===== {section.title} =====")
@@ -57,4 +65,4 @@ class LoggerBroadcaster(ReportBroadcaster):
     def on_report_start(self, report: CurationReport):
         self.logger.critical("===== Curation Report =====")
         self.logger.debug(f"Time: {report.time_stamp.strftime('%Y-%m-%d %H:%M:%S')}")
-        self.logger.debug(f"Version: {report.alchemy_version}")
+        self.logger.debug(f"Version: {report.auroris_version}")

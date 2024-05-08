@@ -6,10 +6,10 @@ import numpy as np
 import pandas as pd
 from rdkit.Chem import FindMolChiralCenters
 
-from alchemy.curation.actions._base import BaseAction
-from alchemy.report import CurationReport
-from alchemy.types import VerbosityLevel
-from alchemy.visualization import visualize_chemspace
+from auroris.curation.actions._base import BaseAction
+from auroris.report import CurationReport
+from auroris.types import VerbosityLevel
+from auroris.visualization import visualize_chemspace
 
 
 def curate_molecules(
@@ -269,7 +269,7 @@ class MoleculeCuration(BaseAction):
                 X = np.array([dm.to_fp(smi) for smi in smiles])
 
             fig = visualize_chemspace(X=X)
-            report.log_image(fig)
+            report.log_image(fig, "Distribution in Chemical Space")
 
             if self.count_stereocenters:
                 # Plot all compounds with undefined stereocenters for visual inspection
@@ -277,15 +277,24 @@ class MoleculeCuration(BaseAction):
                 undefined_col = self.get_column_name("num_undefined_stereo_center")
                 defined_col = self.get_column_name("num_defined_stereo_center")
 
-                to_plot = dataset[dataset[[undefined_col, defined_col]].notna().any(axis=1)]
+                to_plot = dataset.query(f"{undefined_col} > 0 ")
+                num_mol_undefined = to_plot.shape[0]
+                report.log(f"Molecules with undefined stereocenter detected: {num_mol_undefined}.")
 
-                legends = []
-                for _, row in to_plot.iterrows():
-                    undefined = row[undefined_col]
-                    defined = row[defined_col]
-                    legends.append(f"Undefined:{undefined}\n Definded:{defined}")
+                if num_mol_undefined > 0:
+                    legends = []
+                    for _, row in to_plot.iterrows():
+                        undefined = row[undefined_col]
+                        defined = row[defined_col]
+                        legends.append(f"Undefined:{undefined}\n Definded:{defined}")
 
-                image = dm.to_image(to_plot[smiles_col].tolist(), legends=legends, use_svg=False)
-                report.log_image(image)
+                    image = dm.to_image(to_plot[smiles_col].tolist(), legends=legends, use_svg=False)
+                    report.log_image(
+                        image,
+                        title="Molecules with undefined stereocenters",
+                        description=f"There are {num_mol_undefined} molecules with undefined stereocenter(s)."
+                        f"It's recommanded to use <auroris.curaion.action.StereoIsomerACDetection> and"
+                        f"check the stereoisomers and activity cliffs in the dataset.",
+                    )
 
         return dataset

@@ -1,3 +1,3 @@
-::: alchemy.visualization
+::: auroris.visualization
     options:
         filters: ["!^_"]

@@ -3,7 +3,7 @@ requires = ["setuptools", "setuptools-scm"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "alchemy-lib"
+name = "auroris"
 description = "Data Curation in Polaris"
 dynamic = ["version"]
 authors = [
@@ -66,13 +66,13 @@ doc = [
 ]
 
 [project.scripts]
-alchemy = "alchemy.cli:app"
+auroris = "auroris.cli:app"
 
 [project.urls]
 Website = "https://polarishub.io/"
-"Source Code" = "https://github.com/polaris-hub/alchemy"
-"Bug Tracker" = "https://github.com/polaris-hub/alchemy/issues"
-Documentation = "https://polaris-hub.github.io/alchemy/"
+"Source Code" = "https://github.com/polaris-hub/auroris"
+"Bug Tracker" = "https://github.com/polaris-hub/auroris/issues"
+Documentation = "https://polaris-hub.github.io/auroris/"
 
 [tool.setuptools]
 include-package-data = true
@@ -82,26 +82,26 @@ fallback_version = "dev"
 
 [tool.setuptools.packages.find]
 where = ["."]
-include = ["alchemy", "alchemy.*"]
+include = ["auroris", "auroris.*"]
 exclude = []
 namespaces = false
 
 [tool.pytest.ini_options]
 minversion = "7.0"
-addopts = "--verbose --durations=10 -n auto --cov=alchemy --cov-fail-under=75 --cov-report xml --cov-report term"
+addopts = "--verbose --durations=10 -n auto --cov=auroris --cov-fail-under=75 --cov-report xml --cov-report term"
 testpaths = ["tests"]
 pythonpath = "."
 filterwarnings = ["ignore::DeprecationWarning:jupyter_client.connect.*:"]
 
 [tool.coverage.run]
-source = ["alchemy/"]
+source = ["auroris/"]
 disable_warnings = ["no-data-collected"]
 data_file = ".coverage/coverage"
 
 [tool.coverage.report]
 omit = [
-    "alchemy/__init__.py",
-    "alchemy/_version.py",
+    "auroris/__init__.py",
+    "auroris/_version.py",
 ]
 
 [tool.coverage.xml]

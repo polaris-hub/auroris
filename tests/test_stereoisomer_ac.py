@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
 
-from alchemy.curation.functional import detect_streoisomer_activity_cliff
+from auroris.curation.functional import detect_streoisomer_activity_cliff
 
 
 def test_identify_stereoisomers_with_activity_cliff():
@@ -15,7 +15,7 @@ def test_identify_stereoisomers_with_activity_cliff():
     df = detect_streoisomer_activity_cliff(
         dataset=data,
         stereoisomer_id_col="groupby_col",
-        threshold=1.0,
+        threshold=3,
         y_cols=["data_col"],
     )
     # check if identifed ids are correct

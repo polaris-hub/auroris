@@ -2,8 +2,8 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from alchemy.curation.actions import OutlierDetection
-from alchemy.curation.functional import detect_outliers
+from auroris.curation.actions import OutlierDetection
+from auroris.curation.functional import detect_outliers
 
 
 @pytest.mark.parametrize("method", ["iso", "lof", "svm", "ee", "zscore"])

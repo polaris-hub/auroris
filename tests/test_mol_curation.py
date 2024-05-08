@@ -1,7 +1,7 @@
 import datamol as dm
 
-from alchemy.curation.actions._mol import _num_stereo_centers
-from alchemy.curation.functional import curate_molecules
+from auroris.curation.actions._mol import _num_stereo_centers
+from auroris.curation.functional import curate_molecules
 
 
 def test_run_chemistry_curation():

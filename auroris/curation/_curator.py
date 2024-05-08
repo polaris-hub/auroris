@@ -3,11 +3,12 @@ from typing import List, Tuple, Union
 
 import fsspec
 import pandas as pd
+from loguru import logger
 from pydantic import BaseModel, Field, field_serializer, field_validator
 
-from alchemy.curation.actions._base import ACTION_REGISTRY
-from alchemy.report import CurationReport
-from alchemy.types import VerbosityLevel
+from auroris.curation.actions._base import ACTION_REGISTRY, BaseAction
+from auroris.report import CurationReport
+from auroris.types import VerbosityLevel
 
 
 class Curator(BaseModel):
@@ -37,9 +38,12 @@ class Curator(BaseModel):
 
     def transform(self, dataset: pd.DataFrame) -> Tuple[pd.DataFrame, CurationReport]:
         report = CurationReport()
-
         dataset = dataset.copy(deep=True)
+
+        action: BaseAction
         for action in self.steps:
+            logger.info(f"Performing step: {action.name}")
+
             with report.section(action.name):
                 dataset = action.transform(
                     dataset,
@@ -47,6 +51,7 @@ class Curator(BaseModel):
                     verbosity=self.verbosity,
                     parallelized_kwargs=self.parallelized_kwargs,
                 )
+
         return dataset, report
 
     def __call__(self, dataset):
@@ -71,3 +76,4 @@ class Curator(BaseModel):
         """
         with fsspec.open(path, "w") as f:
             json.dump(self.model_dump(), f)
+        return path

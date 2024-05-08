@@ -2,8 +2,8 @@ import datamol as dm
 import pandas as pd
 import typer
 
-from alchemy.curation import Curator
-from alchemy.report.broadcaster import HTMLBroadcaster
+from auroris.curation import Curator
+from auroris.report.broadcaster import HTMLBroadcaster
 
 app = typer.Typer()
 

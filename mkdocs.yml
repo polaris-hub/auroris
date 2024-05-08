@@ -1,8 +1,8 @@
-site_name: "Alchemy"
+site_name: "Auroris"
 site_description: "Tools for data curation for drug discovery datasets."
-site_url: "https://github.com/polaris-hub/alchemy"
-repo_url: "https://github.com/polaris-hub/alchemy"
-repo_name: "polaris-hub/alchemy"
+site_url: "https://github.com/polaris-hub/auroris"
+repo_url: "https://github.com/polaris-hub/auroris"
+repo_name: "polaris-hub/auroris"
 copyright: Copyright 2023 - 2024 Polaris
 
 remote_branch: "gh-pages"
@@ -14,7 +14,7 @@ strict: true
 
 nav:
   - Getting started:
-      - Alchemy: index.md
+      - Auroris: index.md
   - Tutorials:
       - Getting Started: tutorials/getting_started.ipynb
   - API Reference:
@@ -50,7 +50,7 @@ theme:
   logo: images/logo-white.svg
 
 extra_css:
-  - assets/css/custom-alchemy.css
+  - assets/css/custom-auroris.css
 
 extra_javascript:
   - https://polyfill.io/v3/polyfill.min.js?features=es6
@@ -78,7 +78,7 @@ markdown_extensions:
       pygments_lang_class: true
 
 watch:
-  - alchemy/
+  - auroris/
 
 plugins:
   - search
@@ -89,7 +89,7 @@ plugins:
           setup_commands:
             - import sys
             - sys.path.append("docs")
-            - sys.path.append("alchemy")
+            - sys.path.append("auroris")
           options:
             show_root_heading: yes
             heading_level: 3

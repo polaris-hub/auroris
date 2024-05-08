@@ -1,4 +1,4 @@
 
-::: alchemy.curation.actions.OutlierDetection
+::: auroris.curation.actions.OutlierDetection
     options:
         filters: ["!^_"]
