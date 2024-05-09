@@ -54,7 +54,7 @@ class StereoIsomerACDetection(BaseAction):
     Automatic detection of outliers.
     """
 
-    stereoisomer_id_col: str
+    stereoisomer_id_col: str = "MOL_molhash_id_no_stereo"
     y_cols: List[str]
     threshold: float = 2.0
     prefix: str = "AC_"
@@ -80,7 +80,7 @@ class StereoIsomerACDetection(BaseAction):
                 col_with_prefix = self.get_column_name(col)
                 report.log_new_column(col_with_prefix)
 
-                has_cliff = dataset[col_with_prefix].notna()
+                has_cliff = dataset[col_with_prefix] == True
                 num_cliff = has_cliff.sum()
 
                 if num_cliff > 0:

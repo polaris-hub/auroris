@@ -150,7 +150,7 @@ class OutlierDetection(BaseAction):
                 report.log_new_column(is_outlier_col_label)
 
                 fig = visualize_distribution_with_outliers(values=values, is_outlier=is_outlier)
-                report.log_image(fig)
+                report.log_image(fig, title=f"Outlier detection - {column}")
 
         return dataset
 

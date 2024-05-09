@@ -27,9 +27,7 @@ class ContinuousDistributionVisualization(BaseAction):
     ):
         if report is not None:
             for y_col in self.y_cols:
-                fig = visualize_continuous_distribution(
-                    data=dataset[y_col], label_name=y_col, log_scale=self.log_scale
-                )
+                fig = visualize_continuous_distribution(data=dataset[y_col], log_scale=self.log_scale)
                 report.log_image(fig, title=f"Data distribution - {y_col}")
 
         return dataset
