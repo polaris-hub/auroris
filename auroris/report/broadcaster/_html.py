@@ -1,5 +1,6 @@
 import base64
 import os
+import re
 import pathlib
 from copy import deepcopy
 from importlib import resources
@@ -8,7 +9,7 @@ import datamol as dm
 import fsspec
 
 from auroris.report import CurationReport
-from auroris.utils import img2bytes
+from auroris.utils import img2bytes, save_image, path2url
 
 from ._base import ReportBroadcaster
 
@@ -61,9 +62,14 @@ class HTMLBroadcaster(ReportBroadcaster):
                     src = f"data:image/png;base64,{image_data}"
                 else:
                     # Save as separate file
-                    path = dm.fs.join(self._image_dir, f"{image_counter}.png")
-                    image.image.save(path)
-                    src = os.path.relpath(path, self._destination)
+                    filename = (
+                        f"{re.sub(r'[^\w\-\.]', '_', image.title)}.png"
+                        if image.title is not None
+                        else f"{image_counter}.png"
+                    )
+                    path = dm.fs.join(self._image_dir, filename)
+                    save_image(image.image, path, self._destination)
+                    src = path2url(path, self._destination)
 
                 image.image = src
                 image_counter += 1

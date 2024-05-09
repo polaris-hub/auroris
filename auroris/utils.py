@@ -1,10 +1,16 @@
+import os
 from io import BytesIO
 
 import numpy as np
 from matplotlib.figure import Figure
 from PIL import Image
 from PIL.Image import Image as ImageType
+from IPython.core.display import Image as IpythonImage
+import fsspec
+from google.cloud import storage
+
 from sklearn.utils.multiclass import type_of_target
+import datamol as dm
 
 
 def is_regression(values: np.ndarray):
@@ -19,12 +25,17 @@ def is_regression(values: np.ndarray):
 
 def fig2img(fig: Figure) -> ImageType:
     """Convert a Matplotlib figure to a PIL Image"""
-    fig.canvas.draw()
-    return Image.frombytes(
-        "RGBA",
-        fig.canvas.get_width_height(),
-        fig.canvas.buffer_rgba(),
-    )
+    if isinstance(fig, Figure):
+        fig.canvas.draw()
+        return Image.frombytes(
+            "RGBA",
+            fig.canvas.get_width_height(),
+            fig.canvas.buffer_rgba(),
+        )
+
+
+def ipyimg2img(fig: IpythonImage) -> ImageType:
+    return Image.open(BytesIO(fig.data))
 
 
 def img2bytes(image: ImageType):
@@ -33,3 +44,24 @@ def img2bytes(image: ImageType):
     image.save(image_bytes, format="PNG")
     image_bytes = image_bytes.getvalue()
     return image_bytes
+
+
+def path2url(path: str, destination: str):
+    if not os.path.isfile(path):
+        if path.startswith("gs://"):
+            return path.replace("gs://", "https://storage.googleapis.com/")
+        else:
+            raise ValueError("Only GCP path is supported.")
+    else:
+        return os.path.relpath(path, destination)
+
+
+def save_image(image: ImageType, path: str, destination: str):
+    """Save image to local and remote path"""
+    if dm.fs.is_local_path(destination):
+        image.save(path)
+    else:
+        # Lu: couldn't find a way to save image directly to remote path
+        image_bytes = img2bytes(image)
+        with fsspec.open(path, "wb") as f:
+            f.write(image_bytes)

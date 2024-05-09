@@ -2,16 +2,14 @@ from contextlib import contextmanager
 from datetime import datetime
 from typing import ByteString, List, Optional, Union
 
-from io import BytesIO
 from matplotlib import pyplot as plt
 from matplotlib.figure import Figure
 from PIL.Image import Image as ImageType
-from PIL import Image as PILImage
 from IPython.core.display import Image as IpythonImage
 from pydantic import BaseModel, ConfigDict, Field, PrivateAttr
 
 from auroris import __version__
-from auroris.utils import fig2img
+from auroris.utils import fig2img, ipyimg2img
 
 
 class AnnotatedImage(BaseModel):
@@ -81,7 +79,7 @@ class CurationReport(BaseModel):
         """Logs an image. Also accepts Matplotlib figures, which will be converted to images."""
         self._check_active_section()
         if isinstance(image_or_figure, IpythonImage):
-            image = PILImage.open(BytesIO(image_or_figure.data))
+            image = ipyimg2img(image_or_figure)
         elif isinstance(image_or_figure, Figure):
             image = fig2img(image_or_figure)
             plt.close(image_or_figure)
