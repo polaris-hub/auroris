@@ -67,10 +67,14 @@ class Deduplication(BaseAction):
         verbosity: VerbosityLevel = VerbosityLevel.NORMAL,
         parallelized_kwargs: Optional[Dict] = None,
     ):
-        return deduplicate(
+        dataset_dedup = deduplicate(
             dataset,
             deduplicate_on=self.deduplicate_on,
             y_cols=self.y_cols,
             keep=self.keep,
             method=self.method,
         )
+        if report is not None:
+            num_duplicates = dataset.shape[0] - dataset_dedup.shape[0]
+            report.log(f"Deduplication merged and removed {num_duplicates} duplicated molecules from dataset")
+        return dataset_dedup
