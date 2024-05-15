@@ -38,7 +38,7 @@ class Curator(BaseModel):
 
     def transform(self, dataset: pd.DataFrame) -> Tuple[pd.DataFrame, CurationReport]:
         report = CurationReport()
-        dataset = dataset.copy(deep=True)
+        dataset = dataset.copy()
 
         action: BaseAction
         for action in self.steps:

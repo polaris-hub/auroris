@@ -87,3 +87,5 @@ class HTMLBroadcaster(ReportBroadcaster):
         path = dm.fs.join(self._destination, "index.html")
         with fsspec.open(path, "w") as fd:
             fd.write(html)
+
+        return path

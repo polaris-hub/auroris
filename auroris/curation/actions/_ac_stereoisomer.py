@@ -51,7 +51,7 @@ def detect_streoisomer_activity_cliff(
 
 class StereoIsomerACDetection(BaseAction):
     """
-    Automatic detection of outliers.
+    Automatic detection of activity shift between stereoisomers.
     """
 
     stereoisomer_id_col: str = "MOL_molhash_id_no_stereo"
@@ -92,10 +92,12 @@ class StereoIsomerACDetection(BaseAction):
                     legends = (col + dataset.loc[has_cliff, col].astype(str)).tolist()
 
                     image = dm.to_image([dm.to_mol(s) for s in to_plot], legends=legends, use_svg=False)
-                    report.log_image(image)
+                    report.log_image(
+                        image_or_figure=image, title="Detection of activity shifts among stereoisomers"
+                    )
 
                 else:
                     report.log(
-                        "Found no activity cliffs among stereoisomers with respect to the {col} column."
+                        f"Found no activity cliffs among stereoisomers with respect to the {col} column."
                     )
         return dataset
