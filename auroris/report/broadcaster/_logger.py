@@ -34,7 +34,8 @@ class LoggerBroadcaster(ReportBroadcaster):
     def __init__(self, report: CurationReport):
         super().__init__(report)
         self.logger = logging.getLogger()
-        self.logger.setLevel(logging.DEBUG)
+        # Lu: debug level might log other irrelevant debugging logs
+        self.logger.setLevel(logging.INFO)
 
         handler = logging.StreamHandler(sys.stdout)
         handler.setFormatter(ColoredFormatter())
@@ -51,18 +52,22 @@ class LoggerBroadcaster(ReportBroadcaster):
                 self.render_log(log)
             for image in section.images:
                 self.render_image(image)
+        self.on_report_end(self._report)
 
     def render_log(self, message: str):
-        self.logger.debug(f"[LOG]: {message}")
+        self.logger.info(f"[LOG]: {message}")
 
     def render_image(self, image: AnnotatedImage):
         width, height = image.image.size
-        self.logger.debug(f"[IMG]: Dimensions {width} x {height}")
+        self.logger.info(f"[IMG]: Dimensions {width} x {height}")
 
     def on_section_start(self, section: Section):
         self.logger.info(f"===== {section.title} =====")
 
     def on_report_start(self, report: CurationReport):
         self.logger.critical("===== Curation Report =====")
-        self.logger.debug(f"Time: {report.time_stamp.strftime('%Y-%m-%d %H:%M:%S')}")
-        self.logger.debug(f"Version: {report.auroris_version}")
+        self.logger.info(f"Time: {report.time_stamp.strftime('%Y-%m-%d %H:%M:%S')}")
+        self.logger.info(f"Version: {report.auroris_version}")
+
+    def on_report_end(self, report: CurationReport):
+        self.logger.critical("===== Curation Report END =====")
