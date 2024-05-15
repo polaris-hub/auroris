@@ -11,6 +11,11 @@ from auroris.report import CurationReport
 from auroris.types import VerbosityLevel
 from auroris.visualization import visualize_chemspace
 
+try:
+    from molfeat.trans.pretrained.hf_transformers import PretrainedHFTransformer
+except:
+    PretrainedHFTransformer = None
+
 
 def curate_molecules(
     mols: List[Union[str, dm.Mol]],
@@ -228,6 +233,8 @@ class MoleculeCuration(BaseAction):
     remove_stereo: bool = False
     count_stereoisomers: bool = True
     count_stereocenters: bool = True
+    y_cols: Optional[List[str]] = None
+    fast: Optional[bool] = True
 
     def transform(
         self,
@@ -264,12 +271,25 @@ class MoleculeCuration(BaseAction):
             smiles_col = self.get_column_name("smiles")
             smiles = dataset[smiles_col].dropna().values
 
-            with dm.without_rdkit_log():
-                # Temporary disable logs because of deprecation warning
-                X = np.array([dm.to_fp(smi) for smi in smiles])
+            if PretrainedHFTransformer and not self.fast:
+                featurizer = "ChemBERTa-77M-MTR"
+                transformer = PretrainedHFTransformer(kind=featurizer, notation="smiles", dtype=float)
+                X = transformer(smiles)
+                report.log(
+                    "`ChemBERTa-77M-MTR` embedding is used to compute the distributionin chemical space."
+                )
+            else:
+                featurizer = "ECFP"
+                with dm.without_rdkit_log():
+                    # Temporary disable logs because of deprecation warning
+                    X = np.array([dm.to_fp(smi) for smi in smiles])
+                report.log("Default `ecfp` fingerprint is used to compute the distributionin chemical space.")
 
-            fig = visualize_chemspace(X=X)
-            report.log_image(fig, "Distribution in Chemical Space")
+            # list of data per column
+            y = dataset[self.y_cols].T.values.tolist() if self.y_cols else None
+
+            fig = visualize_chemspace(X=X, y=y, labels=self.y_cols)
+            report.log_image(fig, title=f"Distribution in Chemical Space - {featurizer}")
 
             if self.count_stereocenters:
                 # Plot all compounds with undefined stereocenters for visual inspection
