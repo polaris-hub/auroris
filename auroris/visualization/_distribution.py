@@ -3,6 +3,7 @@ from typing import List, Optional, Sequence
 import numpy as np
 import seaborn as sns
 from scipy import stats
+import matplotlib.pyplot as plt
 
 from auroris.visualization.utils import create_figure
 
@@ -82,8 +83,7 @@ def visualize_continuous_distribution(
 
 
 def visualize_distribution_with_outliers(
-    values: np.ndarray,
-    is_outlier: Optional[List[bool]] = None,
+    values: np.ndarray, is_outlier: Optional[List[bool]] = None, title: str = "Probability Plot"
 ):
     """Visualize the distribution of the data and highlight the potential outliers."""
 
@@ -98,14 +98,26 @@ def visualize_distribution_with_outliers(
     values = values[sorted_ind]
     is_outlier = is_outlier[sorted_ind]
 
-    with create_figure(n_plots=2) as (fig, axes):
-        sns.scatterplot(
-            x=np.arange(len(values)),
-            y=values,
-            hue=is_outlier,
-            palette={1.0: "red", 0.0: "navy", 0.5: "grey"},
-            ax=axes[0],
-        )
-        stats.probplot(values, dist="norm", plot=axes[1])
+    fig = plt.figure()
+    res = stats.probplot(values, dist="norm", plot=plt, fit=True)
+    x = res[0][0]
+    y = res[0][1]
+
+    # Specify the indices of data points to highlight
+    highlight_indices = np.argwhere(is_outlier == True).flatten()
+    highlight_color = "red"
+
+    # Plot the probability plot
+    # plt.plot(x, y, "bo")  # Blue circles for regular points
+
+    # Overlay specific points with different colors
+    for idx in highlight_indices:
+        plt.plot(
+            x[idx], y[idx], marker="o", markersize=8, color=highlight_color
+        )  # Red circles for highlighted points
+
+    plt.xlabel("Theoretical quantiles")
+    plt.ylabel("Ordered Values")
+    plt.title(title)
 
     return fig
