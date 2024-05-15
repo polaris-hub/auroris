@@ -145,11 +145,17 @@ class OutlierDetection(BaseAction):
 
             is_outlier_col_label = self.get_column_name(column)
             dataset[is_outlier_col_label] = is_outlier
+            num_outliers = sum(is_outlier)
 
             if report is not None:
                 report.log_new_column(is_outlier_col_label)
-
-                fig = visualize_distribution_with_outliers(values=values, is_outlier=is_outlier)
+                report.log(
+                    f"Found {num_outliers} potential outliers "
+                    f"with respect to the {column} column for review."
+                )
+                fig = visualize_distribution_with_outliers(
+                    values=values, is_outlier=is_outlier, title=f"Probability Plot - {column}"
+                )
                 report.log_image(fig, title=f"Outlier detection - {column}")
 
         return dataset
