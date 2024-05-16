@@ -85,7 +85,15 @@ def visualize_continuous_distribution(
 def visualize_distribution_with_outliers(
     values: np.ndarray, is_outlier: Optional[List[bool]] = None, title: str = "Probability Plot"
 ):
-    """Visualize the distribution of the data and highlight the potential outliers."""
+    """
+    Visualize the distribution of the data and highlight the potential outliers.
+
+    Args:
+        values: Values for visulization.
+        is_outlier: List of outlier flag.
+        title: Title of plot
+
+    """
 
     if is_outlier is None:
         # Import here to prevent ciruclar imports
@@ -104,11 +112,8 @@ def visualize_distribution_with_outliers(
     y = res[0][1]
 
     # Specify the indices of data points to highlight
-    highlight_indices = np.argwhere(is_outlier == True).flatten()
+    highlight_indices = np.argwhere(is_outlier.__eq__(True)).flatten()
     highlight_color = "red"
-
-    # Plot the probability plot
-    # plt.plot(x, y, "bo")  # Blue circles for regular points
 
     # Overlay specific points with different colors
     for idx in highlight_indices:

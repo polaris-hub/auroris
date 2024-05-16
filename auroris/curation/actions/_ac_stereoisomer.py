@@ -15,9 +15,19 @@ def detect_streoisomer_activity_cliff(
     dataset: pd.DataFrame,
     stereoisomer_id_col: str,
     y_cols: List[str],
-    threshold: float = 1.0,
+    threshold: float = 2.0,
     prefix: str = "AC_",
-):
+) -> pd.DataFrame:
+    """
+    Detect activity cliff among stereoisomers based on classification label or pre-defined threshold for continuous values.
+
+    Args:
+        dataset: Dataframe
+        stereoisomer_id_col: Column which identifies the stereoisomers
+        y_cols: List of columns for bioactivities
+        threshold: Threshold to identify the activity cliff. Currently, the difference of zscores between isomers are used for identification.
+        prefix: Prefix for the adding columns
+    """
     dataset_ori = dataset.copy(deep=True)
     ac_cols = {y_col: [] for y_col in y_cols}
     group_index_list = np.array(
@@ -52,6 +62,13 @@ def detect_streoisomer_activity_cliff(
 class StereoIsomerACDetection(BaseAction):
     """
     Automatic detection of activity shift between stereoisomers.
+
+    Args:
+        stereoisomer_id_col: Column which identifies the stereoisomers.
+        y_cols: List of columns for bioactivities.
+        threshold: Threshold to identify the activity cliff. Currently, the difference of zscores between isomers are used for identification.
+        prefix: Prefix for the adding columns.
+        mol_col: Column for molecule strings
     """
 
     stereoisomer_id_col: str = "MOL_molhash_id_no_stereo"
@@ -80,7 +97,7 @@ class StereoIsomerACDetection(BaseAction):
                 col_with_prefix = self.get_column_name(col)
                 report.log_new_column(col_with_prefix)
 
-                has_cliff = dataset[col_with_prefix] == True
+                has_cliff = dataset[col_with_prefix].__eq__(True)
                 num_cliff = has_cliff.sum()
 
                 if num_cliff > 0:

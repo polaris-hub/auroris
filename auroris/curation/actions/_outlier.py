@@ -18,52 +18,6 @@ from auroris.visualization import visualize_distribution_with_outliers
 OutlierDetectionMethod: TypeAlias = Literal["iso", "lof", "svm", "ee", "zscore"]
 
 
-def detect_outliers(X: np.ndarray, method: OutlierDetectionMethod = "zscore", **kwargs: Any):
-    """Functional interface for detecting outliers
-
-    Args:
-        X: The observations that we want to classify as inliers or outliers.
-        method: The method to use for outlier detection.
-        **kwargs: Keyword arguments for the outlier detection method.
-    """
-
-    if X.ndim != 1:
-        raise ValueError("X must be a 1D array for outlier detection.")
-
-    detector_cls = _OUTLIER_METHODS[method]
-    detector = detector_cls(**kwargs)
-    indices = np.flatnonzero(~np.isnan(X))
-
-    in_ = X[indices].reshape(-1, 1)
-    out_ = detector.fit_predict(in_)
-
-    is_inlier = np.full_like(X, np.nan)
-    is_inlier[indices] = out_.flatten()
-
-    is_outlier = is_inlier == -1
-    return is_outlier
-
-
-def modified_zscore(data: np.ndarray, consistency_correction: float = 1.4826):
-    """
-    The modified z score is calculated from the median absolute deviation (MAD).
-    These values must be multiplied by a constant to approximate the standard deviation.
-
-    The modified z score might be more robust than the standard z score because it relies
-    on the median (MED) for calculating the z score.
-
-    modified Z score = (X-MED) / (consistency_correction*MAD)
-
-    """
-    median = np.nanmedian(data)
-
-    deviation_from_med = np.array(data) - median
-
-    mad = np.nanmedian(np.abs(deviation_from_med))
-    mod_zscore = deviation_from_med / (consistency_correction * mad)
-    return mod_zscore
-
-
 class ZscoreOutlier(OutlierMixin):
     """
     Detect outliers by the absolute value of the Z-score.
@@ -122,9 +76,70 @@ class ZscoreOutlier(OutlierMixin):
         return self.predict(X)
 
 
+_OUTLIER_METHODS: Dict[OutlierDetectionMethod, OutlierMixin] = {
+    "iso": IsolationForest,
+    "lof": LocalOutlierFactor,
+    "svm": OneClassSVM,
+    "ee": EllipticEnvelope,
+    "zscore": ZscoreOutlier,
+}
+
+
+def detect_outliers(X: np.ndarray, method: OutlierDetectionMethod = "zscore", **kwargs: Any):
+    """Functional interface for detecting outliers
+
+    Args:
+        X: The observations that we want to classify as inliers or outliers.
+        method: The method to use for outlier detection.
+        **kwargs: Keyword arguments for the outlier detection method.
+    """
+
+    if X.ndim != 1:
+        raise ValueError("X must be a 1D array for outlier detection.")
+
+    detector_cls = _OUTLIER_METHODS[method]
+    detector = detector_cls(**kwargs)
+    indices = np.flatnonzero(~np.isnan(X))
+
+    in_ = X[indices].reshape(-1, 1)
+    out_ = detector.fit_predict(in_)
+
+    is_inlier = np.full_like(X, np.nan)
+    is_inlier[indices] = out_.flatten()
+
+    is_outlier = is_inlier == -1
+    return is_outlier
+
+
+def modified_zscore(data: np.ndarray, consistency_correction: float = 1.4826):
+    """
+    The modified z score is calculated from the median absolute deviation (MAD).
+    These values must be multiplied by a constant to approximate the standard deviation.
+
+    The modified z score might be more robust than the standard z score because it relies
+    on the median (MED) for calculating the z score.
+
+    modified Z score = (X-MED) / (consistency_correction*MAD)
+
+    """
+    median = np.nanmedian(data)
+
+    deviation_from_med = np.array(data) - median
+
+    mad = np.nanmedian(np.abs(deviation_from_med))
+    mod_zscore = deviation_from_med / (consistency_correction * mad)
+    return mod_zscore
+
+
 class OutlierDetection(BaseAction):
     """
-    Automatic detection of outliers.
+    Automatic detection of outliers
+
+    Args:
+        method: Method name for outlier detection.
+        columns: Column names to detect outliers
+        prefix: Prefix for added column names
+
     """
 
     method: OutlierDetectionMethod
@@ -159,12 +174,3 @@ class OutlierDetection(BaseAction):
                 report.log_image(fig, title=f"Outlier detection - {column}")
 
         return dataset
-
-
-_OUTLIER_METHODS: Dict[OutlierDetectionMethod, OutlierMixin] = {
-    "iso": IsolationForest,
-    "lof": LocalOutlierFactor,
-    "svm": OneClassSVM,
-    "ee": EllipticEnvelope,
-    "zscore": ZscoreOutlier,
-}

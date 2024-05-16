@@ -1,5 +1,4 @@
 import base64
-import os
 import re
 import pathlib
 from copy import deepcopy
@@ -20,7 +19,14 @@ except ImportError:
 
 
 class HTMLBroadcaster(ReportBroadcaster):
-    """Render a simple HTML page"""
+    """
+    Render a simple HTML page
+
+    Args:
+        report: Curation report object.
+        destination: Destination folder for exporting the report.
+        embed_images: Whether embed image bytes in HTML report.
+    """
 
     def __init__(
         self,

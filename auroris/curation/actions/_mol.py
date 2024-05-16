@@ -13,7 +13,7 @@ from auroris.visualization import visualize_chemspace
 
 try:
     from molfeat.trans.pretrained.hf_transformers import PretrainedHFTransformer
-except:
+except Exception:
     PretrainedHFTransformer = None
 
 
@@ -26,6 +26,24 @@ def curate_molecules(
     count_stereocenters: bool = True,
     **parallelized_kwargs,
 ):
+    """
+    Curate a list of molecules.
+
+    Args:
+        mols: List of molecules
+        progress: Whether show curation progress
+        remove_salt_solvent: Whether remove salt and solvent from molecule
+        remove_stereo: Whether remove stereo chemistry information from molecule
+        count_stereoisomers: Whether count the number of stereoisomers of molecule
+        count_stereocenters: Whether count the number of stereocenters of molecule
+        parallelized_kwargs: Additional argument for the parallelizarion process.
+                             See more about <datamol.utils.parallelized>
+
+    Returns:
+        mol_dict: Dictionary of molecule and additional metadata
+        num_invalid: Number of invalid molecules
+
+    """
     fn = partial(
         _curate_molecule,
         remove_salt_solvent=remove_salt_solvent,
@@ -191,10 +209,11 @@ def _get_mol_dict(
 
 
 def _num_stereo_centers(mol: dm.Mol) -> Tuple[int]:
-    """Get the number of defined and undefined stereo centers of a given molecule
-        by accessing the all and only defined stereo centers.
-        It's to facilitate the analysis of the stereo isomers.
-        None will be return if there is no stereo centers in the molecule.
+    """
+    Get the number of defined and undefined stereo centers of a given molecule
+    by accessing the all and only defined stereo centers.
+    It's to facilitate the analysis of the stereo isomers.
+    None will be return if there is no stereo centers in the molecule.
 
      Args:
          mol: Molecule
@@ -218,7 +237,9 @@ def _num_stereo_centers(mol: dm.Mol) -> Tuple[int]:
 
 class MoleculeCuration(BaseAction):
     """
-    Attributes:
+    Automated molecule curation and chemistry space distribution
+
+    Args:
         input_column: The name of the column that has the molecules (either `dm.Mol` objects or SMILES).
         remove_salt_solvent: When set to 'True', all disconnected salts and solvents
             will be removed from molecule. In most of the cases, it is recommended to remove the salts/solvents.

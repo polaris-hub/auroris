@@ -5,7 +5,7 @@ from os import PathLike
 import fsspec
 import pandas as pd
 from loguru import logger
-from pydantic import BaseModel, Field, field_serializer, field_validator, ValidationError
+from pydantic import BaseModel, Field, field_serializer, field_validator
 
 from auroris.curation.actions._base import ACTION_REGISTRY, BaseAction
 from auroris.report import CurationReport
@@ -16,6 +16,13 @@ class Curator(BaseModel):
     """
     A curator is a collection of actions that are applied to a dataset.
     Can be serialized.
+
+    Args:
+        data_path: Data path.
+                   The data must be loadable by `pd.read_csv` with default parameters.
+        steps: List of curation actions.
+               Check all the available action <auroris.curation.actions.__all__>.
+
     """
 
     # To know which Action object to create, we need a discriminated union.
@@ -43,7 +50,7 @@ class Curator(BaseModel):
         try:
             pd.read_csv(value, nrows=5)
             return value
-        except:
+        except Exception:
             raise ValueError(
                 f"Dataset cann't be loaded by `panda.read_csv('{value}')`."
                 f"Consider to directly pass the loaded the data to `Curator.curate()`."

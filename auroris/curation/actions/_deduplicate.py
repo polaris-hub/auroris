@@ -53,6 +53,12 @@ def deduplicate(
 class Deduplication(BaseAction):
     """
     Automatic detection of outliers.
+
+    Args:
+        deduplicate_on: A subset of the columns to deduplicate on (can be default).
+        y_cols: The columns to aggregate.
+        keep: Whether to keep the first or last copy of the duplicates.
+        method: The method to aggregate the data.
     """
 
     deduplicate_on: Optional[Union[str, List[str]]] = None

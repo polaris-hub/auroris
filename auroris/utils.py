@@ -7,13 +7,13 @@ from PIL import Image
 from PIL.Image import Image as ImageType
 from IPython.core.display import Image as IpythonImage
 import fsspec
-from google.cloud import storage
 
 from sklearn.utils.multiclass import type_of_target
 import datamol as dm
 
 
-def is_regression(values: np.ndarray):
+def is_regression(values: np.ndarray) -> bool:
+    """Whether the input values are for regreesion"""
     target_type = type_of_target(values)
     if target_type == "continuous":
         return True
@@ -35,6 +35,7 @@ def fig2img(fig: Figure) -> ImageType:
 
 
 def ipyimg2img(fig: IpythonImage) -> ImageType:
+    """Convert Ipython image to PIL image"""
     return Image.open(BytesIO(fig.data))
 
 
@@ -47,6 +48,10 @@ def img2bytes(image: ImageType):
 
 
 def path2url(path: str, destination: str):
+    """
+    Convert path to an local or remote url for html report.
+    Currently, only GCP is supported.
+    """
     if not os.path.isfile(path):
         if path.startswith("gs://"):
             return path.replace("gs://", "https://storage.googleapis.com/")
@@ -62,6 +67,8 @@ def save_image(image: ImageType, path: str, destination: str):
         image.save(path)
     else:
         # Lu: couldn't find a way to save image directly to remote path
+        # convert to bytes
         image_bytes = img2bytes(image)
+        # save bytes as image to remote path
         with fsspec.open(path, "wb") as f:
             f.write(image_bytes)
