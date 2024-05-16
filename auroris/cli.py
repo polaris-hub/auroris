@@ -2,6 +2,7 @@ import datamol as dm
 import pandas as pd
 import typer
 
+from typing import Optional
 from auroris.curation import Curator
 from auroris.report.broadcaster import HTMLBroadcaster
 
@@ -9,9 +10,9 @@ app = typer.Typer()
 
 
 @app.command()
-def curate(config_path: str, dataset_path: str, destination: str, overwrite: bool = False):
+def curate(config_path: str, destination: str, dataset_path: Optional[str] = None, overwrite: bool = False):
     # Load data
-    dataset = pd.read_csv(dataset_path)
+    dataset = pd.read_csv(dataset_path) if dataset_path else None
     curator = Curator.from_json(config_path)
 
     # Run curation

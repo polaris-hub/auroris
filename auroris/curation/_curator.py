@@ -1,10 +1,11 @@
 import json
-from typing import List, Tuple, Union
+from typing import List, Tuple, Union, Optional
 
+from os import PathLike
 import fsspec
 import pandas as pd
 from loguru import logger
-from pydantic import BaseModel, Field, field_serializer, field_validator
+from pydantic import BaseModel, Field, field_serializer, field_validator, ValidationError
 
 from auroris.curation.actions._base import ACTION_REGISTRY, BaseAction
 from auroris.report import CurationReport
@@ -21,8 +22,9 @@ class Curator(BaseModel):
     # This is the recommended way to add all subclasses in the type.
     # See e.g. https://github.com/pydantic/pydantic/issues/2200
     # and https://github.com/pydantic/pydantic/issues/2036
-    steps: List[Union[tuple(ACTION_REGISTRY)]] = Field(..., discriminator="name")  # type: ignore
+    data_path: Optional[Union[str, PathLike]] = None
 
+    steps: List[Union[tuple(ACTION_REGISTRY)]] = Field(..., discriminator="name")  # type: ignore
     verbosity: VerbosityLevel = VerbosityLevel.NORMAL
     parallelized_kwargs: dict = Field(default_factory=dict)
 
@@ -36,7 +38,28 @@ class Curator(BaseModel):
     def _serialize_verbosity(self, value: VerbosityLevel):
         return value.name
 
-    def transform(self, dataset: pd.DataFrame) -> Tuple[pd.DataFrame, CurationReport]:
+    @field_validator("data_path", mode="before")
+    def _validate_data_path(cls, value: Union[str, PathLike]):
+        try:
+            pd.read_csv(value, nrows=5)
+            return value
+        except:
+            raise ValueError(
+                f"Dataset cann't be loaded by `panda.read_csv('{value}')`."
+                f"Consider to directly pass the loaded the data to `Curator.curate()`."
+            )
+
+    @field_serializer("verbosity")
+    def _serialize_verbosity(self, value: Union[str, PathLike]):
+        return value.name
+
+    def _load_data(self):
+        return pd.read_csv(self.data_path)
+
+    def transform(self, dataset: Optional[pd.DataFrame] = None) -> Tuple[pd.DataFrame, CurationReport]:
+        if dataset is None:
+            dataset = self._load_data()
+
         report = CurationReport()
         dataset = dataset.copy()
 
@@ -58,6 +81,13 @@ class Curator(BaseModel):
         return self.transform(dataset)
 
     @classmethod
+    def _get_action(cls, name: str):
+        for action in ACTION_REGISTRY:
+            if action.__name__ == name:
+                return action
+        return None
+
+    @classmethod
     def from_json(cls, path: str):
         """Loads a curation workflow from a JSON file.
 
@@ -66,6 +96,9 @@ class Curator(BaseModel):
         """
         with fsspec.open(path, "r") as f:
             data = json.load(f)
+
+        steps = [cls._get_action(name)(**args) for step in data["steps"] for name, args in step.items()]
+        data["steps"] = steps
         return cls.model_validate(data)
 
     def to_json(self, path: str):
@@ -74,6 +107,11 @@ class Curator(BaseModel):
         Args:
             path: The destination to save to
         """
+        serialization = self.model_dump(exclude="steps")
+        # # save steps in defined order
+        serialization["steps"] = [{step.name: step.model_dump()} for step in self.steps]
         with fsspec.open(path, "w") as f:
-            json.dump(self.model_dump(), f)
+            json.dump(serialization, f)
+        # with fsspec.open(path, "w") as f:
+        #     json.dump(self.model_dump(), f)
         return path
