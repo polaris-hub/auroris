@@ -119,6 +119,4 @@ class Curator(BaseModel):
         serialization["steps"] = [{step.name: step.model_dump()} for step in self.steps]
         with fsspec.open(path, "w") as f:
             json.dump(serialization, f)
-        # with fsspec.open(path, "w") as f:
-        #     json.dump(self.model_dump(), f)
         return path
