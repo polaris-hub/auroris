@@ -3,7 +3,6 @@ from typing import List, Optional, Sequence
 import numpy as np
 import seaborn as sns
 from scipy import stats
-import matplotlib.pyplot as plt
 
 from auroris.visualization.utils import create_figure
 
@@ -107,22 +106,22 @@ def visualize_distribution_with_outliers(
     is_outlier = is_outlier[sorted_ind]
 
     with create_figure(n_plots=1) as (fig, axes):
-      res = stats.probplot(values, dist="norm", plot=plt, fit=True, plot=axes[0])
-      x = res[0][0]
-      y = res[0][1]
+        res = stats.probplot(values, dist="norm", fit=True, plot=axes[0])
+        x = res[0][0]
+        y = res[0][1]
 
-      # Specify the indices of data points to highlight
-      highlight_indices = np.argwhere(is_outlier.__eq__(True)).flatten()
-      highlight_color = "red"
+        # Specify the indices of data points to highlight
+        highlight_indices = np.argwhere(is_outlier.__eq__(True)).flatten()
+        highlight_color = "red"
 
-      # Overlay specific points with different colors
-      for idx in highlight_indices:
-          ax.plot(
-              x[idx], y[idx], marker="o", markersize=8, color=highlight_color
-          )  # Red circles for highlighted points
+        # Overlay specific points with different colors
+        for idx in highlight_indices:
+            axes[0].plot(
+                x[idx], y[idx], marker="o", markersize=8, color=highlight_color
+            )  # Red circles for highlighted points
 
-      ax.xlabel("Theoretical quantiles")
-      ax.ylabel("Ordered Values")
-      ax.title(title)
+        axes[0].set_xlabel("Theoretical quantiles")
+        axes[0].set_ylabel("Ordered Values")
+        axes[0].set_title(title)
 
     return fig
