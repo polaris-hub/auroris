@@ -14,7 +14,7 @@ from auroris.visualization import visualize_chemspace
 
 try:
     from molfeat.trans.pretrained.hf_transformers import PretrainedHFTransformer
-except Exception:
+except ImportError:
     PretrainedHFTransformer = None
 
 
