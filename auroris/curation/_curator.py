@@ -53,8 +53,8 @@ class Curator(BaseModel):
             return value
         except Exception:
             raise ValueError(
-                f"Dataset cann't be loaded by `panda.read_csv('{value}')`."
-                f"Consider to directly pass the loaded the data to `Curator.curate()`."
+                f"Dataset can't be loaded by `pandas.read_csv('{value}')`."
+                f"Consider passing the DataFrame directly to `Curator.curate(dataset=...)`."
             )
 
     def _load_data(self):
