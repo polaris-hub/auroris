@@ -106,23 +106,23 @@ def visualize_distribution_with_outliers(
     values = values[sorted_ind]
     is_outlier = is_outlier[sorted_ind]
 
-    fig = plt.figure()
-    res = stats.probplot(values, dist="norm", plot=plt, fit=True)
-    x = res[0][0]
-    y = res[0][1]
+    with create_figure(n_plots=1) as (fig, axes):
+      res = stats.probplot(values, dist="norm", plot=plt, fit=True, plot=axes[0])
+      x = res[0][0]
+      y = res[0][1]
 
-    # Specify the indices of data points to highlight
-    highlight_indices = np.argwhere(is_outlier.__eq__(True)).flatten()
-    highlight_color = "red"
+      # Specify the indices of data points to highlight
+      highlight_indices = np.argwhere(is_outlier.__eq__(True)).flatten()
+      highlight_color = "red"
 
-    # Overlay specific points with different colors
-    for idx in highlight_indices:
-        plt.plot(
-            x[idx], y[idx], marker="o", markersize=8, color=highlight_color
-        )  # Red circles for highlighted points
+      # Overlay specific points with different colors
+      for idx in highlight_indices:
+          ax.plot(
+              x[idx], y[idx], marker="o", markersize=8, color=highlight_color
+          )  # Red circles for highlighted points
 
-    plt.xlabel("Theoretical quantiles")
-    plt.ylabel("Ordered Values")
-    plt.title(title)
+      ax.xlabel("Theoretical quantiles")
+      ax.ylabel("Ordered Values")
+      ax.title(title)
 
     return fig
