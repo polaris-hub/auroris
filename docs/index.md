@@ -6,7 +6,7 @@ Welcome to the Auroris - Simplifying Drug Discovery Data Curation
 
 ## What is Auroris?
 
-Auroris is a comprehensive Python library designed to assist researchers, scientists in managing, cleaning, and preparing data relevant to drug discovery. The library offers a range of features and techniques to handle diverse data types commonly encountered in drug discovery, including chemical structures, biological assays, and potentially to be extended to cell imaging data, genomic data, and clinical trial information.
+Auroris is a comprehensive Python library designed to assist researchers and scientists in managing, cleaning, and preparing data relevant to drug discovery. Our mission is to implement a range of techniques to handle, transform, filter, analyze, or visualize the diverse data types commonly encountered in drug discovery.
 
 
 ## Where to next?
