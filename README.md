@@ -6,10 +6,10 @@
 [![Conda](https://img.shields.io/conda/dn/conda-forge/auroris)](https://anaconda.org/conda-forge/auroris)
 [![PyPI - Python Version](https://img.shields.io/pypi/pyversions/auroris)](https://pypi.org/project/auroris/)
 
-[![test](https://github.com/polaris-hub/polaris/actions/workflows/test.yml/badge.svg)](https://github.com/polaris-hub/polaris/actions/workflows/test.yml)
-[![release](https://github.com/polaris-hub/polaris/actions/workflows/release.yml/badge.svg)](https://github.com/polaris-hub/polaris/actions/workflows/release.yml)
-[![code-check](https://github.com/polaris-hub/polaris/actions/workflows/code-check.yml/badge.svg)](https://github.com/polaris-hub/polaris/actions/workflows/code-check.yml)
-[![doc](https://github.com/polaris-hub/polaris/actions/workflows/doc.yml/badge.svg)](https://github.com/polaris-hub/polaris/actions/workflows/doc.yml)
+[![test](https://github.com/polaris-hub/auroris/actions/workflows/test.yml/badge.svg)](https://github.com/polaris-hub/auroris/actions/workflows/test.yml)
+[![release](https://github.com/polaris-hub/auroris/actions/workflows/release.yml/badge.svg)](https://github.com/polaris-hub/auroris/actions/workflows/release.yml)
+[![code-check](https://github.com/polaris-hub/auroris/actions/workflows/code-check.yml/badge.svg)](https://github.com/polaris-hub/auroris/actions/workflows/code-check.yml)
+[![doc](https://github.com/polaris-hub/auroris/actions/workflows/doc.yml/badge.svg)](https://github.com/polaris-hub/auroris/actions/workflows/doc.yml)
 
 Tools for data curation in the Polaris ecosystem. 
 
@@ -40,7 +40,7 @@ Please refer to the [documentation](https://polaris-hub.github.io/auroris/), whi
 
 ## Installation
 
-You can install `polaris` using conda/mamba/micromamba:
+You can install `auroris` using conda/mamba/micromamba:
 
 ```bash
 conda install -c conda-forge auroris
