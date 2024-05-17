@@ -14,7 +14,7 @@ Auroris is a comprehensive Python library designed to assist researchers, scient
 
 **:fontawesome-solid-rocket:  Quickstart**
 
-Dive deeper into the Auroris code and learn about how to curate data for your ML-powered drug discovery program. 
+Dive deeper into the Auroris code and learn how to curate data for your ML-powered drug discovery program. 
 
 [:material-arrow-right: Let's get started](./tutorials/getting_started.ipynb)
 
