@@ -27,7 +27,6 @@ nav:
           - Stereoisomer AC: api/actions/stereo_ac.md
       - Functional: api/functional.md
       - Visualization: api/visualization.md
-      - Types: api/types.md
   - Community: https://discord.gg/vBFd8p6H7u
   - Polaris Hub: https://polarishub.io/
 
@@ -99,6 +98,8 @@ plugins:
             separate_signature: true
             show_signature_annotations: true
             line_length: 80
+            extensions:
+            - griffe_fieldz: {include_inherited: true} # support pydantic data-class 
   - mkdocs-jupyter:
       execute: False
       remove_tag_config:

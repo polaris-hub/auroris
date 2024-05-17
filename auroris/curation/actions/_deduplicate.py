@@ -1,4 +1,5 @@
 from typing import Dict, List, Literal, Optional, Union
+from pydantic import Field
 
 import pandas as pd
 
@@ -53,18 +54,18 @@ def deduplicate(
 class Deduplication(BaseAction):
     """
     Automatic detection of outliers.
-
-    Args:
-        deduplicate_on: A subset of the columns to deduplicate on (can be default).
-        y_cols: The columns to aggregate.
-        keep: Whether to keep the first or last copy of the duplicates.
-        method: The method to aggregate the data.
     """
 
-    deduplicate_on: Optional[Union[str, List[str]]] = None
-    y_cols: Optional[Union[str, List[str]]] = None
-    keep: Literal["first", "last"] = "first"
-    method: Literal["mean", "median"] = "median"
+    deduplicate_on: Optional[Union[str, List[str]]] = Field(
+        default=None, description="A subset of the columns to deduplicate on (can be default)."
+    )
+    y_cols: Optional[Union[str, List[str]]] = Field(default=None, description="The columns to aggregate.")
+    keep: Literal["first", "last"] = Field(
+        default="first", description="Whether to keep the first or last copy of the duplicates."
+    )
+    method: Literal["mean", "median"] = Field(
+        default="median", description="The method to aggregate the data."
+    )
 
     def transform(
         self,

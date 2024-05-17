@@ -17,21 +17,22 @@ class Curator(BaseModel):
     A curator is a collection of actions that are applied to a dataset.
     Can be serialized.
 
-    Args:
-        data_path: Data path.
-                   The data must be loadable by `pd.read_csv` with default parameters.
-        steps: List of curation actions.
-               Check all the available action <auroris.curation.actions.__all__>.
-
     """
 
     # To know which Action object to create, we need a discriminated union.
     # This is the recommended way to add all subclasses in the type.
     # See e.g. https://github.com/pydantic/pydantic/issues/2200
     # and https://github.com/pydantic/pydantic/issues/2036
-    data_path: Optional[Union[str, PathLike]] = None
+    data_path: Optional[Union[str, PathLike]] = Field(
+        default=None,
+        description="Data path. The data must be loadable by `pd.read_csv` with default parameters.",
+    )
 
-    steps: List[Union[tuple(ACTION_REGISTRY)]] = Field(..., discriminator="name")  # type: ignore
+    steps: List[Union[tuple(ACTION_REGISTRY)]] = Field(
+        ...,
+        discriminator="name",
+        description="List of curation actions. Check all the available action <auroris.curation.actions.__all__>.",
+    )
     verbosity: VerbosityLevel = VerbosityLevel.NORMAL
     parallelized_kwargs: dict = Field(default_factory=dict)
 
@@ -55,10 +56,6 @@ class Curator(BaseModel):
                 f"Dataset cann't be loaded by `panda.read_csv('{value}')`."
                 f"Consider to directly pass the loaded the data to `Curator.curate()`."
             )
-
-    @field_serializer("verbosity")
-    def _serialize_verbosity(self, value: Union[str, PathLike]):
-        return value.name
 
     def _load_data(self):
         return pd.read_csv(self.data_path)

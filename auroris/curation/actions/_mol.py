@@ -1,5 +1,6 @@
 from functools import partial
 from typing import Dict, List, Optional, Tuple, Union
+from pydantic import Field
 
 import datamol as dm
 import numpy as np
@@ -25,23 +26,21 @@ def curate_molecules(
     count_stereoisomers: bool = True,
     count_stereocenters: bool = True,
     **parallelized_kwargs,
-):
+) -> Tuple:
     """
     Curate a list of molecules.
 
     Args:
-        mols: List of molecules
-        progress: Whether show curation progress
-        remove_salt_solvent: Whether remove salt and solvent from molecule
-        remove_stereo: Whether remove stereo chemistry information from molecule
-        count_stereoisomers: Whether count the number of stereoisomers of molecule
-        count_stereocenters: Whether count the number of stereocenters of molecule
-        parallelized_kwargs: Additional argument for the parallelizarion process.
-                             See more about <datamol.utils.parallelized>
+        mols: List of molecules.
+        progress: Whether show curation progress.
+        remove_salt_solvent: Whether remove salt and solvent from molecule.
+        remove_stereo: Whether remove stereo chemistry information from molecule.
+        count_stereoisomers: Whether count the number of stereoisomers of molecule.
+        count_stereocenters: Whether count the number of stereocenters of molecule.
 
     Returns:
         mol_dict: Dictionary of molecule and additional metadata
-        num_invalid: Number of invalid molecules
+        num_invalid: Number of invßßalid molecules
 
     """
     fn = partial(
@@ -237,25 +236,31 @@ def _num_stereo_centers(mol: dm.Mol) -> Tuple[int]:
 
 class MoleculeCuration(BaseAction):
     """
-    Automated molecule curation and chemistry space distribution
-
-    Args:
-        input_column: The name of the column that has the molecules (either `dm.Mol` objects or SMILES).
-        remove_salt_solvent: When set to 'True', all disconnected salts and solvents
-            will be removed from molecule. In most of the cases, it is recommended to remove the salts/solvents.
-        remove_stereo: Whether remove stereochemistry information from molecule.
-            If it's known that the stereochemistry do not contribute to the bioactivity of interest,
-            the stereochemistry information can be removed.
+    Automated molecule curation and chemistry space distribution.
     """
 
-    input_column: str
-    prefix: str = "MOL_"
-    remove_salt_solvent: bool = True
-    remove_stereo: bool = False
-    count_stereoisomers: bool = True
-    count_stereocenters: bool = True
-    y_cols: Optional[List[str]] = None
-    fast: Optional[bool] = True
+    input_column: str = Field(
+        ..., description="The name of the column that has the molecules (either `dm.Mol` objects or SMILES)."
+    )
+    prefix: str = Field(default="MOL_", description="Prefix for added column names")
+    remove_salt_solvent: bool = Field(
+        default=True, description="When set to 'True', all disconnected salts and solvents"
+    )
+    remove_stereo: bool = Field(
+        default=False,
+        description="Whether remove stereochemistry information from molecule. If it's known that the stereochemistry do not contribute to the bioactivity of interest, the stereochemistry information can be removed.",
+    )
+    count_stereoisomers: bool = Field(
+        default=True, description="Whether count the number of stereoisomers of molecule."
+    )
+    count_stereocenters: bool = Field(
+        default=True, description="Whether count the number of stereocenter of molecule."
+    )
+    y_cols: Optional[List[str]] = Field(default=None, description="Column names for bioactivities")
+    fast: Optional[bool] = Field(
+        default=True,
+        description="Whether compute molecule features with default ECFP for visualizing distribution in chemical space.",
+    )
 
     def transform(
         self,

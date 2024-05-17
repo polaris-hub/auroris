@@ -133,18 +133,12 @@ def modified_zscore(data: np.ndarray, consistency_correction: float = 1.4826):
 
 class OutlierDetection(BaseAction):
     """
-    Automatic detection of outliers
-
-    Args:
-        method: Method name for outlier detection.
-        columns: Column names to detect outliers
-        prefix: Prefix for added column names
-
+    Automatic detection of outliers.
     """
 
-    method: OutlierDetectionMethod
-    columns: List[str]
-    prefix: str = "OUTLIER_"
+    method: OutlierDetectionMethod = Field(..., description="Method name for outlier detection.")
+    columns: List[str] = Field(..., description="Column names to detect outliers.")
+    prefix: str = Field(default="OUTLIER_", description="Prefix for added column names.")
     kwargs: Dict = Field(default_factory=dict)
 
     def transform(

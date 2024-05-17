@@ -2,7 +2,7 @@ import abc
 from typing import TYPE_CHECKING, Dict, Optional
 
 import pandas as pd
-from pydantic import BaseModel, model_validator
+from pydantic import BaseModel, model_validator, Field
 
 from auroris.types import VerbosityLevel
 
@@ -16,14 +16,9 @@ ACTION_REGISTRY = []
 class BaseAction(BaseModel, abc.ABC):
     """
     An action in the curation process.
-
-    Args:
-        prefix: If the action adds columns, use this prefix.
-        completed: If the action has completed.
-        dep_action: Name of dependent action.
     """
 
-    prefix: str = None
+    prefix: str = Field(default=None, description="If the action adds columns, use this prefix.")
 
     @property
     def name(self) -> str:

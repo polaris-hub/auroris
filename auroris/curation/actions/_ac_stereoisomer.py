@@ -1,8 +1,10 @@
 from typing import Dict, List, Optional
+from pydantic import Field
 
 import datamol as dm
 import numpy as np
 import pandas as pd
+
 
 from auroris.curation.actions._base import BaseAction
 from auroris.curation.actions._outlier import modified_zscore
@@ -62,20 +64,18 @@ def detect_streoisomer_activity_cliff(
 class StereoIsomerACDetection(BaseAction):
     """
     Automatic detection of activity shift between stereoisomers.
-
-    Args:
-        stereoisomer_id_col: Column which identifies the stereoisomers.
-        y_cols: List of columns for bioactivities.
-        threshold: Threshold to identify the activity cliff. Currently, the difference of zscores between isomers are used for identification.
-        prefix: Prefix for the adding columns.
-        mol_col: Column for molecule strings
     """
 
-    stereoisomer_id_col: str = "MOL_molhash_id_no_stereo"
-    y_cols: List[str]
-    threshold: float = 2.0
-    prefix: str = "AC_"
-    mol_col: str = "MOL_smiles"
+    stereoisomer_id_col: str = Field(
+        default="MOL_molhash_id_no_stereo", description="Column which identifies the stereoisomers."
+    )
+    y_cols: List[str] = Field(..., description="List of columns for bioactivities.")
+    threshold: float = Field(
+        default=2.0,
+        description=" Threshold to identify the activity cliff. Currently, the difference of zscores between isomers are used for identification.",
+    )
+    prefix: str = Field(default="AC_", description="Prefix for the adding columns.")
+    mol_col: str = Field(default="MOL_smiles", description="Column for molecule strings.")
 
     def transform(
         self,

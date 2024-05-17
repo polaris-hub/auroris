@@ -1,5 +1,5 @@
 from typing import Dict, List, Optional, Sequence
-
+from pydantic import Field
 import pandas as pd
 
 from auroris.curation.actions._base import BaseAction
@@ -10,18 +10,16 @@ from auroris.visualization import visualize_continuous_distribution
 
 class ContinuousDistributionVisualization(BaseAction):
     """
-    Visualize a continuous distribution
-
-    Args:
-        y_cols: List of columns for bioactivity for visualization
-        log_scale: Whether visualize distribution in log scale.
-        bins: The bin boundaries to color the area under the KDE curve.
-
+    Visualize a continuous distribution.
     """
 
-    y_cols: Optional[List[str]] = None
-    log_scale: bool = False
-    bins: Optional[Sequence[float]] = None
+    y_cols: Optional[List[str]] = Field(
+        default=None, description="List of columns for bioactivity for visualization."
+    )
+    log_scale: bool = Field(default=False, description="Whether visualize distribution in log scale.")
+    bins: Optional[Sequence[float]] = Field(
+        default=None, description="The bin boundaries to color the area under the KDE curve."
+    )
 
     def transform(
         self,
