@@ -112,7 +112,10 @@ class Curator(BaseModel):
             path: The destination to save to
         """
         serialization = self.model_dump(exclude="steps")
-        # # save steps in defined order
+        # remove data_path
+        if self.data_path is None:
+            serialization.pop("data_path")
+        # save steps in defined order
         serialization["steps"] = [{step.name: step.model_dump()} for step in self.steps]
         with fsspec.open(path, "w") as f:
             json.dump(serialization, f)

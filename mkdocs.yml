@@ -27,6 +27,7 @@ nav:
           - Stereoisomer AC: api/actions/stereo_ac.md
       - Functional: api/functional.md
       - Visualization: api/visualization.md
+      - Types: api/types.md
   - Community: https://discord.gg/vBFd8p6H7u
   - Polaris Hub: https://polarishub.io/
 
