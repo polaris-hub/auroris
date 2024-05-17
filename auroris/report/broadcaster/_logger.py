@@ -33,7 +33,7 @@ class LoggerBroadcaster(ReportBroadcaster):
 
     def __init__(self, report: CurationReport):
         super().__init__(report)
-        self.logger = logging.getLogger()
+        self.logger = logging.getLogger(self.__class__.__name__)
         # Lu: debug level might log other irrelevant debugging logs
         self.logger.setLevel(logging.INFO)
 
