@@ -68,11 +68,11 @@ class HTMLBroadcaster(ReportBroadcaster):
                     src = f"data:image/png;base64,{image_data}"
                 else:
                     # Save as separate file
-                    filename = (
-                        f"{re.sub(r'[^\w\-\.]', '_', image.title)}.png"
-                        if image.title is not None
-                        else f"{image_counter}.png"
-                    )
+                    if image.title:
+                        filename = f"{re.sub(r'[^\w\-\.]', '_', image.title)}.png"
+                    else:
+                        filename = f"{image_counter}.png"
+
                     path = dm.fs.join(self._image_dir, filename)
                     save_image(image.image, path, self._destination)
                     src = path2url(path, self._destination)
