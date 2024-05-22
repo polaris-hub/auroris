@@ -1,11 +1,11 @@
 import os
 from io import BytesIO
+from typing import ByteString
 
 import numpy as np
 from matplotlib.figure import Figure
 from PIL import Image
 from PIL.Image import Image as ImageType
-from IPython.core.display import Image as IpythonImage
 import fsspec
 
 from sklearn.utils.multiclass import type_of_target
@@ -34,17 +34,19 @@ def fig2img(fig: Figure) -> ImageType:
         )
 
 
-def ipyimg2img(fig: IpythonImage) -> ImageType:
-    """Convert Ipython image to PIL image"""
-    return Image.open(BytesIO(fig.data))
-
-
 def img2bytes(image: ImageType):
     """Convert png image to bytes"""
     image_bytes = BytesIO()
     image.save(image_bytes, format="PNG")
     image_bytes = image_bytes.getvalue()
     return image_bytes
+
+
+def bytes2imf(image_bytes: ByteString):
+    image_stream = BytesIO(image_bytes)
+    # Open the image using PIL
+    image = Image.open(image_stream)
+    return image
 
 
 def path2url(path: str, destination: str):

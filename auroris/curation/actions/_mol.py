@@ -297,19 +297,12 @@ class MoleculeCuration(BaseAction):
             smiles_col = self.get_column_name("smiles")
             smiles = dataset[smiles_col].dropna().values
 
-            if PretrainedHFTransformer and not self.fast:
-                featurizer = "ChemBERTa-77M-MTR"
-                transformer = PretrainedHFTransformer(kind=featurizer, notation="smiles", dtype=float)
-                X = transformer(smiles)
-                report.log(
-                    "`ChemBERTa-77M-MTR` embedding is used to compute the distributionin chemical space."
-                )
-            else:
-                featurizer = "ECFP"
-                with dm.without_rdkit_log():
-                    # Temporary disable logs because of deprecation warning
-                    X = np.array([dm.to_fp(smi) for smi in smiles])
-                report.log("Default `ecfp` fingerprint is used to compute the distributionin chemical space.")
+            # Lu: User can call visulize_chemspace for the customized molecular features.
+            featurizer = "ECFP"
+            with dm.without_rdkit_log():
+                # Temporary disable logs because of deprecation warning
+                X = np.array([dm.to_fp(smi) for smi in smiles])
+            report.log("Default `ecfp` fingerprint is used to compute the distributionin chemical space.")
 
             # list of data per column
             y = dataset[self.y_cols].T.values.tolist() if self.y_cols else None
@@ -334,7 +327,10 @@ class MoleculeCuration(BaseAction):
                         defined = row[defined_col]
                         legends.append(f"Undefined:{undefined}\n Definded:{defined}")
 
-                    image = dm.to_image(to_plot[smiles_col].tolist(), legends=legends, use_svg=False)
+                    # returnPNG to avoid ipythonImage
+                    image = dm.to_image(
+                        to_plot[smiles_col].tolist(), legends=legends, use_svg=False, returnPNG=True
+                    )
                     report.log_image(
                         image,
                         title="Molecules with undefined stereocenters",
