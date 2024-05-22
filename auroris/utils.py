@@ -50,18 +50,18 @@ def bytes2img(image_bytes: ByteString):
     return image
 
 
-def path2url(path: str, destination: str):
+def _img_to_html_src(self, path: str):
     """
-    Convert path to an local or remote url for html report.
-    Currently, only GCP is supported.
+    Convert a path to a corresponding `src` attribute for an `<img />` tag.
+    Currently only supports GCP and local paths.
     """
-    if not os.path.isfile(path):
-        if path.startswith("gs://"):
-            return path.replace("gs://", "https://storage.googleapis.com/")
-        else:
-            raise ValueError("Only GCP path is supported.")
-    else:
-        return os.path.relpath(path, destination)
+    protocol = dm.utils.fs.get_protocol(path)
+    if protocol == "gs":
+        return path.replace("gs://", "https://storage.googleapis.com/")
+    elif protocol == "file":
+        return os.path.relpath(path, self._destination)
+    else: 
+       raise ValueError("We only support images hosted in GCP or locally")
 
 
 def save_image(image: ImageType, path: str, destination: str):
