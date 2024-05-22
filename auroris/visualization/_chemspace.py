@@ -12,7 +12,7 @@ except ImportError:
 
 
 def visualize_chemspace(
-    X: Union[List[np.ndarray], np.ndarray],
+    X: np.ndarray,
     y: Optional[Union[List[np.ndarray], np.ndarray]] = None,
     labels: Optional[List[str]] = None,
     n_cols: int = 2,
@@ -22,10 +22,10 @@ def visualize_chemspace(
     seaborn_theme: Optional[str] = "whitegrid",
     **umap_kwargs: Any,
 ):
-    """Plot the chemical space. Also, color based on the target values.
+    """Plot the coverage in chemical space. Also, color based on the target values.
 
     Args:
-        X: A list of arrays with the features.
+        X: Array the molecular features.
         y: A list of arrays with the target values.
         labels: Optional list of labels for each set of features.
         n_cols: Number of columns in the subplots.
@@ -40,7 +40,7 @@ def visualize_chemspace(
         raise ImportError("Please run `pip install umap-learn` to use UMAP visualizations for the chemspace.")
 
     if isinstance(y, np.ndarray):
-        y = list(y)
+        y = [y]
 
     if y is None:
         y = [None]
@@ -72,5 +72,4 @@ def visualize_chemspace(
             ax.set_xlabel("Component 0")
             ax.set_xlabel("Component 1")
             ax.set_title(label)
-
     return fig
