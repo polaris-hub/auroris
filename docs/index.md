@@ -30,7 +30,7 @@ Explore the technical documentation here to delve into the inner workings of the
 
 **:fontawesome-solid-comments:  Community**
 
-We're excited to have you join us in revolutionizing drug discovery data curation! Explore Polaris, provide feedback, share your use cases, and collaborate with us to enhance and expand the capabilities of Polaris for the benefit of the drug discovery community.
+We're excited to have you join us in revolutionizing drug discovery data curation! Explore Auroris and the broader Polaris ecosystem it is part of, provide feedback, share your use cases, and collaborate with us to enhance and expand the capabilities of Auroris for the benefit of the drug discovery community.
 
 [:material-arrow-right: Let's get started](https://discord.gg/vBFd8p6H7u)
 
