@@ -59,4 +59,3 @@ def is_parquet_file(path):
         return True
     except (IOError, ValueError):
         return False
-

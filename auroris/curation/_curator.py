@@ -12,6 +12,7 @@ from auroris.report import CurationReport
 from auroris.types import VerbosityLevel
 from auroris.utils import is_parquet_file
 
+
 class Curator(BaseModel):
     """
     A curator is a collection of actions that are applied to a dataset.

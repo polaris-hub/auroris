@@ -98,12 +98,10 @@ class HTMLBroadcaster(ReportBroadcaster):
     def _img_to_html_src(self, path: str):
         """
         Convert a path to a corresponding `src` attribute for an `<img />` tag.
-        Currently only supports GCP and local paths.
+        Currently only supports local paths.
         """
         protocol = dm.utils.fs.get_protocol(path)
-        if protocol == "gs":
-            return path.replace("gs://", "https://storage.googleapis.com/")
-        elif protocol == "file":
+        if protocol == "file":
             return os.path.relpath(path, self._destination)
         else:
-            raise ValueError("We only support images hosted in GCP or locally")
+            raise ValueError("We only support images hosted locally")
