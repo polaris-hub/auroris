@@ -140,6 +140,7 @@ class OutlierDetection(BaseAction):
     columns: List[str] = Field(..., description="Column names to detect outliers.")
     prefix: str = Field(default="OUTLIER_", description="Prefix for added column names.")
     kwargs: Dict = Field(default_factory=dict)
+    name: Literal["outlier_detection"] = "outlier_detection"
 
     def transform(
         self,

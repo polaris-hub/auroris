@@ -2,7 +2,7 @@ import abc
 from typing import TYPE_CHECKING, Dict, Optional
 
 import pandas as pd
-from pydantic import BaseModel, model_validator, Field, computed_field
+from pydantic import BaseModel, model_validator, Field
 
 from auroris.types import VerbosityLevel
 
@@ -19,12 +19,6 @@ class BaseAction(BaseModel, abc.ABC):
     """
 
     prefix: str = Field(default=None, description="If the action adds columns, use this prefix.")
-
-    @computed_field
-    @property
-    def name(self) -> str:
-        """The name of the action. Needs to be unique."""
-        return self.__class__.__name__
 
     @model_validator(mode="after")
     @classmethod

@@ -66,6 +66,7 @@ class Deduplication(BaseAction):
     method: Literal["mean", "median"] = Field(
         default="median", description="The method to aggregate the data."
     )
+    name: Literal["deduplicate"] = "deduplicate"
 
     def transform(
         self,

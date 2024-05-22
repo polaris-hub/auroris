@@ -1,5 +1,5 @@
 from functools import partial
-from typing import Dict, List, Optional, Tuple, Union
+from typing import Dict, List, Literal, Optional, Tuple, Union
 from pydantic import Field
 
 import datamol as dm
@@ -11,11 +11,7 @@ from auroris.curation.actions._base import BaseAction
 from auroris.report import CurationReport
 from auroris.types import VerbosityLevel
 from auroris.visualization import visualize_chemspace
-
-try:
-    from molfeat.trans.pretrained.hf_transformers import PretrainedHFTransformer
-except ImportError:
-    PretrainedHFTransformer = None
+from auroris.visualization.utils import create_figure
 
 
 def curate_molecules(
@@ -261,6 +257,7 @@ class MoleculeCuration(BaseAction):
         default=True,
         description="Whether compute molecule features with default ECFP for visualizing distribution in chemical space.",
     )
+    name: Literal["mol_curation"] = "mol_curation"
 
     def transform(
         self,
@@ -327,10 +324,14 @@ class MoleculeCuration(BaseAction):
                         defined = row[defined_col]
                         legends.append(f"Undefined:{undefined}\n Definded:{defined}")
 
-                    # returnPNG to avoid ipythonImage
-                    image = dm.to_image(
-                        to_plot[smiles_col].tolist(), legends=legends, use_svg=False, returnPNG=True
-                    )
+                    with create_figure(
+                        n_plots=1,
+                        n_cols=1,
+                    ) as (image, _):
+                        dm.to_image(
+                            to_plot[smiles_col].tolist(), legends=legends, use_svg=False, returnPNG=True
+                        )
+
                     report.log_image(
                         image,
                         title="Molecules with undefined stereocenters",

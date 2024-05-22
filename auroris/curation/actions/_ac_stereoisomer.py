@@ -1,4 +1,4 @@
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Literal
 from pydantic import Field
 
 import datamol as dm
@@ -76,6 +76,7 @@ class StereoIsomerACDetection(BaseAction):
     )
     prefix: str = Field(default="AC_", description="Prefix for the adding columns.")
     mol_col: str = Field(default="MOL_smiles", description="Column for molecule strings.")
+    name: Literal["ac_stereoisomer"] = "ac_stereoisomer"
 
     def transform(
         self,

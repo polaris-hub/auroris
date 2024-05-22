@@ -111,6 +111,7 @@ class Discretization(BaseAction):
         description="""Whether visualize distribution in log scale.
                    See more in <auroris.visualization.visualize_continuous_distribution>""",
     )
+    name: Literal["discretize"] = "discretize"
 
     def transform(
         self,

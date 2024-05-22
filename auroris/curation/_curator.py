@@ -1,5 +1,5 @@
 import json
-from typing import List, Tuple, Union, Optional
+from typing import List, Tuple, Union, Optional, Annotated
 
 from os import PathLike
 import fsspec
@@ -7,7 +7,7 @@ import pandas as pd
 from loguru import logger
 from pydantic import BaseModel, Field, field_serializer, field_validator
 
-from auroris.curation.actions._base import ACTION_REGISTRY, BaseAction
+from auroris.curation.actions import BaseAction
 from auroris.report import CurationReport
 from auroris.types import VerbosityLevel
 
@@ -28,11 +28,16 @@ class Curator(BaseModel):
         description="Data path. The data must be loadable by `pd.read_csv` with default parameters.",
     )
 
-    steps: List[Union[tuple(ACTION_REGISTRY)]] = Field(
-        ...,
-        discriminator="name",
-        description="List of curation actions. Check all the available action <auroris.curation.actions.__all__>.",
-    )
+    steps: List[
+        Annotated[
+            Union[tuple(BaseAction.__subclasses__())],
+            Field(
+                ...,
+                discriminator="name",
+                description="List of curation actions. Check all the available action <auroris.curation.actions.__all__>.",
+            ),
+        ]
+    ]
     verbosity: VerbosityLevel = VerbosityLevel.NORMAL
     parallelized_kwargs: dict = Field(default_factory=dict)
 
@@ -85,13 +90,6 @@ class Curator(BaseModel):
         return self.transform(dataset)
 
     @classmethod
-    def _get_action(cls, name: str):
-        for action in ACTION_REGISTRY:
-            if action.__name__ == name:
-                return action
-        return None
-
-    @classmethod
     def from_json(cls, path: str):
         """Loads a curation workflow from a JSON file.
 
@@ -101,8 +99,7 @@ class Curator(BaseModel):
         with fsspec.open(path, "r") as f:
             data = json.load(f)
 
-        data["steps"] = [cls._get_action(step["name"]).model_validate(step) for step in data["steps"]]
-        return cls.model_validate(data)
+        return cls(**data)
 
     def to_json(self, path: str):
         """Saves the curation workflow to a JSON file.

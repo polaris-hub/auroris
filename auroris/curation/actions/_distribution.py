@@ -1,4 +1,4 @@
-from typing import Dict, List, Optional, Sequence
+from typing import Dict, List, Optional, Sequence, Literal
 from pydantic import Field
 import pandas as pd
 
@@ -20,6 +20,7 @@ class ContinuousDistributionVisualization(BaseAction):
     bins: Optional[Sequence[float]] = Field(
         default=None, description="The bin boundaries to color the area under the KDE curve."
     )
+    name: Literal["distribution"] = "distribution"
 
     def transform(
         self,
