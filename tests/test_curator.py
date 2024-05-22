@@ -17,8 +17,7 @@ def test_curator_save_load(tmpdir):
             OutlierDetection(method="zscore", columns=["outlier_column"]),
         ],
     )
-    path = os.path.join(tmpdir, "curator_lu.json")
-    print(path)
+    path = os.path.join(tmpdir, "curator.json")
     curator.to_json(path)
     curator_reload = curator.from_json(path)
 

@@ -71,7 +71,11 @@ class CurationReport(BaseModel):
 
     def log_image(
         self,
-        image_or_figure: Union[ImageType, Figure, ByteString],
+        image_or_figure: Union[
+            ImageType,
+            Figure,
+            ByteString,
+        ],
         title: Optional[str] = None,
         description: Optional[str] = None,
     ):

@@ -1,14 +1,15 @@
 import os
 from io import BytesIO
 from typing import ByteString
+import fsspec
 
 import numpy as np
 from matplotlib.figure import Figure
 from PIL import Image
 from PIL.Image import Image as ImageType
-import fsspec
 
 from sklearn.utils.multiclass import type_of_target
+
 import datamol as dm
 
 
@@ -25,13 +26,12 @@ def is_regression(values: np.ndarray) -> bool:
 
 def fig2img(fig: Figure) -> ImageType:
     """Convert a Matplotlib figure to a PIL Image"""
-    if isinstance(fig, Figure):
-        fig.canvas.draw()
-        return Image.frombytes(
-            "RGBA",
-            fig.canvas.get_width_height(),
-            fig.canvas.buffer_rgba(),
-        )
+    fig.canvas.draw()
+    return Image.frombytes(
+        "RGBA",
+        fig.canvas.get_width_height(),
+        fig.canvas.buffer_rgba(),
+    )
 
 
 def img2bytes(image: ImageType):
@@ -60,18 +60,10 @@ def _img_to_html_src(self, path: str):
         return path.replace("gs://", "https://storage.googleapis.com/")
     elif protocol == "file":
         return os.path.relpath(path, self._destination)
-    else: 
-       raise ValueError("We only support images hosted in GCP or locally")
-
-
-def save_image(image: ImageType, path: str, destination: str):
-    """Save image to local and remote path"""
-    if dm.fs.is_local_path(destination):
-        image.save(path)
     else:
-        # Lu: couldn't find a way to save image directly to remote path
-        # convert to bytes
-        image_bytes = img2bytes(image)
-        # save bytes as image to remote path
-        with fsspec.open(path, "wb") as f:
-            f.write(image_bytes)
+        raise ValueError("We only support images hosted in GCP or locally")
+
+
+def save_image(image: ImageType, path: str):
+    with fsspec.open(path, "wb") as fd:
+        image.save(fd, format="png")

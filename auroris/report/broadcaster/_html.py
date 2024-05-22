@@ -8,7 +8,7 @@ import datamol as dm
 import fsspec
 
 from auroris.report import CurationReport
-from auroris.utils import img2bytes, save_image, path2url
+from auroris.utils import img2bytes, save_image, _img_to_html_src
 
 from ._base import ReportBroadcaster
 
@@ -72,8 +72,8 @@ class HTMLBroadcaster(ReportBroadcaster):
                     filename = re.sub(r"[ ./]", "_", image.title) if image.title else ""
                     filename = "-".join([str(image_counter), filename])
                     path = dm.fs.join(self._image_dir, f"{filename}.png")
-                    save_image(image.image, path, self._destination)
-                    src = path2url(path, self._destination)
+                    save_image(image.image, path)
+                    src = _img_to_html_src(path, self._destination)
 
                 image.image = src
                 image_counter += 1
