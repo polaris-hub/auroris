@@ -5,11 +5,10 @@ from typing import ByteString, List, Optional, Union
 from matplotlib import pyplot as plt
 from matplotlib.figure import Figure
 from PIL.Image import Image as ImageType
-from IPython.core.display import Image as IpythonImage
 from pydantic import BaseModel, ConfigDict, Field, PrivateAttr
 
 from auroris import __version__
-from auroris.utils import fig2img, ipyimg2img
+from auroris.utils import fig2img, bytes2img
 
 
 class AnnotatedImage(BaseModel):
@@ -72,17 +71,17 @@ class CurationReport(BaseModel):
 
     def log_image(
         self,
-        image_or_figure: Union[ImageType, Figure, ByteString, IpythonImage],
+        image_or_figure: Union[ImageType, Figure, ByteString],
         title: Optional[str] = None,
         description: Optional[str] = None,
     ):
         """Logs an image. Also accepts Matplotlib figures, which will be converted to images."""
         self._check_active_section()
-        if isinstance(image_or_figure, IpythonImage):
-            image = ipyimg2img(image_or_figure)
-        elif isinstance(image_or_figure, Figure):
+        if isinstance(image_or_figure, Figure):
             image = fig2img(image_or_figure)
             plt.close(image_or_figure)
+        elif isinstance(image_or_figure, ByteString):
+            image = bytes2img(image_or_figure)
         else:
             image = image_or_figure
 

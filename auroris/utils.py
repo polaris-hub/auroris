@@ -42,7 +42,8 @@ def img2bytes(image: ImageType):
     return image_bytes
 
 
-def bytes2imf(image_bytes: ByteString):
+def bytes2img(image_bytes: ByteString):
+    """Convert bytes to PIL image"""
     image_stream = BytesIO(image_bytes)
     # Open the image using PIL
     image = Image.open(image_stream)
