@@ -1,16 +1,13 @@
-import os
 from io import BytesIO
 from typing import ByteString
 import fsspec
-
+import pyarrow.parquet as pq
 import numpy as np
 from matplotlib.figure import Figure
 from PIL import Image
 from PIL.Image import Image as ImageType
 
 from sklearn.utils.multiclass import type_of_target
-
-import datamol as dm
 
 
 def is_regression(values: np.ndarray) -> bool:
@@ -50,20 +47,16 @@ def bytes2img(image_bytes: ByteString):
     return image
 
 
-def _img_to_html_src(self, path: str):
-    """
-    Convert a path to a corresponding `src` attribute for an `<img />` tag.
-    Currently only supports GCP and local paths.
-    """
-    protocol = dm.utils.fs.get_protocol(path)
-    if protocol == "gs":
-        return path.replace("gs://", "https://storage.googleapis.com/")
-    elif protocol == "file":
-        return os.path.relpath(path, self._destination)
-    else:
-        raise ValueError("We only support images hosted in GCP or locally")
-
-
 def save_image(image: ImageType, path: str):
     with fsspec.open(path, "wb") as fd:
         image.save(fd, format="png")
+
+
+def is_parquet_file(path):
+    """Verify parquet file"""
+    try:
+        pq.read_schema(path)
+        return True
+    except (IOError, ValueError):
+        return False
+

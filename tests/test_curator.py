@@ -1,5 +1,7 @@
 import os
 
+from pandas.core.api import DataFrame as DataFrame
+
 from auroris.curation import Curator
 from auroris.curation.actions import Discretization, MoleculeCuration, OutlierDetection
 from auroris.report.broadcaster import HTMLBroadcaster, LoggerBroadcaster

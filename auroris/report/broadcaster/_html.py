@@ -1,5 +1,6 @@
 import base64
 import re
+import os
 import pathlib
 from copy import deepcopy
 from importlib import resources
@@ -8,7 +9,7 @@ import datamol as dm
 import fsspec
 
 from auroris.report import CurationReport
-from auroris.utils import img2bytes, save_image, _img_to_html_src
+from auroris.utils import img2bytes, save_image
 
 from ._base import ReportBroadcaster
 
@@ -73,7 +74,7 @@ class HTMLBroadcaster(ReportBroadcaster):
                     filename = "-".join([str(image_counter), filename])
                     path = dm.fs.join(self._image_dir, f"{filename}.png")
                     save_image(image.image, path)
-                    src = _img_to_html_src(path, self._destination)
+                    src = self._img_to_html_src(path)
 
                 image.image = src
                 image_counter += 1
@@ -93,3 +94,16 @@ class HTMLBroadcaster(ReportBroadcaster):
             fd.write(html)
 
         return path
+
+    def _img_to_html_src(self, path: str):
+        """
+        Convert a path to a corresponding `src` attribute for an `<img />` tag.
+        Currently only supports GCP and local paths.
+        """
+        protocol = dm.utils.fs.get_protocol(path)
+        if protocol == "gs":
+            return path.replace("gs://", "https://storage.googleapis.com/")
+        elif protocol == "file":
+            return os.path.relpath(path, self._destination)
+        else:
+            raise ValueError("We only support images hosted in GCP or locally")

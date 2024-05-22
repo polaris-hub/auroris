@@ -98,7 +98,7 @@ class StereoIsomerACDetection(BaseAction):
                 col_with_prefix = self.get_column_name(col)
                 report.log_new_column(col_with_prefix)
 
-                has_cliff = dataset[col_with_prefix].__eq__(True)
+                has_cliff = dataset[col_with_prefix]
                 num_cliff = has_cliff.sum()
 
                 if num_cliff > 0:

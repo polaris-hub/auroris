@@ -83,6 +83,6 @@ class Deduplication(BaseAction):
             method=self.method,
         )
         if report is not None:
-            num_duplicates = dataset.shape[0] - dataset_dedup.shape[0]
+            num_duplicates = len(dataset) - len(dataset_dedup)
             report.log(f"Deduplication merged and removed {num_duplicates} duplicated molecules from dataset")
         return dataset_dedup
