@@ -23,7 +23,7 @@ class Curator(BaseModel):
     # This is the recommended way to add all subclasses in the type.
     # See e.g. https://github.com/pydantic/pydantic/issues/2200
     # and https://github.com/pydantic/pydantic/issues/2036
-    data_path: Optional[Union[str, PathLike]] = Field(
+    src_dataset_path: Optional[Union[str, PathLike]] = Field(
         default=None,
         description="Data path. The data must be loadable by `pd.read_csv` with default parameters.",
     )
@@ -46,8 +46,8 @@ class Curator(BaseModel):
     def _serialize_verbosity(self, value: VerbosityLevel):
         return value.name
 
-    @field_validator("data_path", mode="before")
-    def _validate_data_path(cls, value: Union[str, PathLike]):
+    @field_validator("src_dataset_path", mode="before")
+    def _validate_src_dataset_path(cls, value: Union[str, PathLike]):
         try:
             pd.read_csv(value, nrows=5)
             return value
@@ -58,14 +58,14 @@ class Curator(BaseModel):
             )
 
     def _load_data(self):
-        return pd.read_csv(self.data_path)
+        return pd.read_csv(self.src_dataset_path)
 
     def transform(self, dataset: Optional[pd.DataFrame] = None) -> Tuple[pd.DataFrame, CurationReport]:
         if dataset is None:
             dataset = self._load_data()
 
         report = CurationReport()
-        dataset = dataset.copy()
+        dataset = dataset.copy(deep=True)
 
         action: BaseAction
         for action in self.steps:
@@ -101,22 +101,19 @@ class Curator(BaseModel):
         with fsspec.open(path, "r") as f:
             data = json.load(f)
 
-        steps = [cls._get_action(name)(**args) for step in data["steps"] for name, args in step.items()]
-        data["steps"] = steps
+        data["steps"] = [cls._get_action(step["name"]).model_validate(step) for step in data["steps"]]
         return cls.model_validate(data)
 
     def to_json(self, path: str):
         """Saves the curation workflow to a JSON file.
 
         Args:
-            path: The destination to save to
+            path: The destination to save to.
         """
-        serialization = self.model_dump(exclude="steps")
-        # remove data_path
-        if self.data_path is None:
-            serialization.pop("data_path")
-        # save steps in defined order
-        serialization["steps"] = [{step.name: step.model_dump()} for step in self.steps]
+        serialization = self.model_dump()
+        # remove src_dataset_path if unavailable
+        if self.src_dataset_path is None:
+            serialization.pop("src_dataset_path")
         with fsspec.open(path, "w") as f:
             json.dump(serialization, f)
         return path
