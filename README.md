@@ -33,6 +33,10 @@ curator = Curator(
 # Run the curation
 dataset, report = curator(dataset)
 ```
+### Run curation with command line
+```
+auroris [config_file] [destination] --dataset-path [data_path]
+```
 
 ## Documentation
 

@@ -104,4 +104,4 @@ class HTMLBroadcaster(ReportBroadcaster):
         if protocol == "file":
             return os.path.relpath(path, self._destination)
         else:
-            raise ValueError("We only support images hosted locally")
+            raise ValueError("We only support images hosted locally.")

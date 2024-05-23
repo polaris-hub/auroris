@@ -83,7 +83,7 @@ class Discretization(BaseAction):
     """
 
     input_column: str = Field(..., description="Column to be discretized.")
-    prefix: str = "CLS_"
+    prefix: str = Field(default="CLS_", description="Prefix for added column names.")
     thresholds: List[float] = Field(..., description="Interval boundaries that include the right bin edge.")
     inplace: bool = Field(
         default=False,
