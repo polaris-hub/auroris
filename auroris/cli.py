@@ -23,7 +23,7 @@ def curate(config_path: str, destination: str, dataset_path: Optional[str] = Non
 
     # Save dataset
     dm.fs.mkdir(destination, exist_ok=overwrite)
-    path = dm.fs.join(destination, "curated.csv")
+    path = dm.fs.join(destination, "curated.parquet")
     dataset.to_parquet(path, index=False)
 
     # Save a copy of the curation config
