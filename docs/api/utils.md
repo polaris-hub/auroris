@@ -1,4 +1,4 @@
-::: auroris.visualization
+::: auroris.utils
     options:
         filters: ["!^_"]
         show_root_heading: False

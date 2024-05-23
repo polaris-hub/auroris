@@ -1,6 +1,5 @@
 from functools import partial
 from typing import Dict, List, Literal, Optional, Tuple, Union
-from pydantic import Field
 
 import datamol as dm
 import numpy as np
@@ -233,31 +232,27 @@ def _num_stereo_centers(mol: dm.Mol) -> Tuple[int]:
 class MoleculeCuration(BaseAction):
     """
     Automated molecule curation and chemistry space distribution.
+
+    See [`auroris.curation.functional.curate_molecules`][] for the docs of the
+    `remove_salt_solvent`, `remove_stereo`, `count_stereoisomers`, and `count_stereocenters` attributes
+
+    Attributes:
+        input_column: The name of the column that has the molecules (either `dm.Mol` objects or SMILES).
+        X_col: Column with custom features for each of the molecules. If None, will use ECFP.
+        y_cols: Column names for bioactivities, which will be used to colorcode the chemical space visualization.
     """
 
-    input_column: str = Field(
-        ..., description="The name of the column that has the molecules (either `dm.Mol` objects or SMILES)."
-    )
-    prefix: str = Field(default="MOL_", description="Prefix for added column names")
-    remove_salt_solvent: bool = Field(
-        default=True, description="When set to 'True', all disconnected salts and solvents"
-    )
-    remove_stereo: bool = Field(
-        default=False,
-        description="Whether remove stereochemistry information from molecule. If it's known that the stereochemistry do not contribute to the bioactivity of interest, the stereochemistry information can be removed.",
-    )
-    count_stereoisomers: bool = Field(
-        default=True, description="Whether count the number of stereoisomers of molecule."
-    )
-    count_stereocenters: bool = Field(
-        default=True, description="Whether count the number of stereocenter of molecule."
-    )
-    y_cols: Optional[List[str]] = Field(default=None, description="Column names for bioactivities")
-    fast: Optional[bool] = Field(
-        default=True,
-        description="Whether compute molecule features with default ECFP for visualizing distribution in chemical space.",
-    )
     name: Literal["mol_curation"] = "mol_curation"
+    prefix: str = "MOL_"
+
+    input_column: str
+    remove_salt_solvent: bool = True
+    remove_stereo: bool = False
+    count_stereoisomers: bool = True
+    count_stereocenters: bool = True
+
+    X_col: Optional[str] = None
+    y_cols: Optional[Union[str, List[str]]] = None
 
     def transform(
         self,
@@ -266,8 +261,8 @@ class MoleculeCuration(BaseAction):
         verbosity: VerbosityLevel = VerbosityLevel.NORMAL,
         parallelized_kwargs: Optional[Dict] = None,
     ) -> pd.DataFrame:
+        # Run the curation
         mols = dataset[self.input_column].values
-
         parallelized_kwargs = parallelized_kwargs or {}
         mol_dict, num_invalid = curate_molecules(
             mols,
@@ -287,6 +282,9 @@ class MoleculeCuration(BaseAction):
 
         dataset = pd.concat([dataset, df], axis=1)
 
+        # Log information to the report
+        # - New columns with the curated molecule information
+
         if report is not None:
             for col in df.columns:
                 report.log_new_column(col)
@@ -294,12 +292,15 @@ class MoleculeCuration(BaseAction):
             smiles_col = self.get_column_name("smiles")
             smiles = dataset[smiles_col].dropna().values
 
-            # Lu: User can call visulize_chemspace for the customized molecular features.
-            featurizer = "ECFP"
-            with dm.without_rdkit_log():
-                # Temporary disable logs because of deprecation warning
-                X = np.array([dm.to_fp(smi) for smi in smiles])
-            report.log("Default `ecfp` fingerprint is used to compute the distributionin chemical space.")
+            if self.X_col is None:
+                featurizer = "ECFP"
+                with dm.without_rdkit_log():
+                    X = np.array([dm.to_fp(smi) for smi in smiles])
+                report.log("Default `ecfp` fingerprint is used to visualize the chemical space.")
+
+            else:
+                featurizer = self.X_col
+                X = dataset[self.X_col].values
 
             # list of data per column
             y = dataset[self.y_cols].T.values.tolist() if self.y_cols else None
@@ -309,7 +310,6 @@ class MoleculeCuration(BaseAction):
 
             if self.count_stereocenters:
                 # Plot all compounds with undefined stereocenters for visual inspection
-
                 undefined_col = self.get_column_name("num_undefined_stereo_center")
                 defined_col = self.get_column_name("num_defined_stereo_center")
 
@@ -324,10 +324,7 @@ class MoleculeCuration(BaseAction):
                         defined = row[defined_col]
                         legends.append(f"Undefined:{undefined}\n Definded:{defined}")
 
-                    with create_figure(
-                        n_plots=1,
-                        n_cols=1,
-                    ) as (image, _):
+                    with create_figure(n_plots=1, n_cols=1) as (image, _):
                         dm.to_image(
                             to_plot[smiles_col].tolist(), legends=legends, use_svg=False, returnPNG=True
                         )
@@ -335,9 +332,9 @@ class MoleculeCuration(BaseAction):
                     report.log_image(
                         image,
                         title="Molecules with undefined stereocenters",
-                        description=f"There are {num_mol_undefined} molecules with undefined stereocenter(s)."
-                        f"It's recommanded to use <auroris.curaion.action.StereoIsomerACDetection> and"
-                        f"check the stereoisomers and activity cliffs in the dataset.",
+                        description=f"There are {num_mol_undefined} molecules with undefined stereocenter(s). "
+                        "It's recommended to use <auroris.curation.action.StereoIsomerACDetection> and "
+                        "check the stereoisomers and activity cliffs in the dataset.",
                     )
 
         return dataset

@@ -34,6 +34,8 @@ curator = Curator(
 dataset, report = curator(dataset)
 ```
 ### Run curation with command line
+A `Curator` object is serializable, so you can save it to and load it from a JSON file to reproduce the curation.
+
 ```
 auroris [config_file] [destination] --dataset-path [data_path]
 ```

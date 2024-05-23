@@ -1,7 +1,6 @@
 import base64
-import re
 import os
-import pathlib
+import re
 from copy import deepcopy
 from importlib import resources
 
@@ -56,8 +55,6 @@ class HTMLBroadcaster(ReportBroadcaster):
         if not self._embed_images:
             dm.fs.mkdir(self._image_dir, exist_ok=True)
 
-        pathlib.Path(__file__).parent.resolve() / "templates"
-
         # Save all images
         image_counter = 0
         for section in report.sections:
@@ -100,8 +97,7 @@ class HTMLBroadcaster(ReportBroadcaster):
         Convert a path to a corresponding `src` attribute for an `<img />` tag.
         Currently only supports local paths.
         """
-        protocol = dm.utils.fs.get_protocol(path)
-        if protocol == "file":
+        if dm.utils.fs.is_local_path(path):
             return os.path.relpath(path, self._destination)
         else:
             raise ValueError("We only support images hosted locally.")

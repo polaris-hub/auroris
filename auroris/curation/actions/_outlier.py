@@ -134,13 +134,20 @@ def modified_zscore(data: np.ndarray, consistency_correction: float = 1.4826):
 class OutlierDetection(BaseAction):
     """
     Automatic detection of outliers.
+
+    See [`auroris.curation.functional.detect_outliers`][] for the docs of the
+    `method` and `kwargs` attributes
+
+    Attributes:
+        columns: The columns for which to detect outliers.
     """
+
+    name: Literal["outlier_detection"] = "outlier_detection"
+    prefix: str = Field(default="OUTLIER_", description="Prefix for added column names.")
 
     method: OutlierDetectionMethod = Field(..., description="Method name for outlier detection.")
     columns: List[str] = Field(..., description="Column names to detect outliers.")
-    prefix: str = Field(default="OUTLIER_", description="Prefix for added column names.")
     kwargs: Dict = Field(default_factory=dict)
-    name: Literal["outlier_detection"] = "outlier_detection"
 
     def transform(
         self,

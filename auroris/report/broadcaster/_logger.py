@@ -17,7 +17,7 @@ class ColoredFormatter(logging.Formatter):
 
     FORMATS = {
         logging.DEBUG: grey + format + reset,
-        logging.INFO: grey + format + reset,
+        logging.INFO: blue + format + reset,
         logging.WARNING: yellow + format + reset,
         logging.ERROR: red + format + reset,
         logging.CRITICAL: bold_red + format + reset,
@@ -61,7 +61,7 @@ class LoggerBroadcaster(ReportBroadcaster):
         self.logger.debug(f"[IMG]: Dimensions {width} x {height}")
 
     def on_section_start(self, section: Section):
-        self.logger.debug(f"===== {section.title} =====")
+        self.logger.info(f"===== {section.title} =====")
 
     def on_report_start(self, report: CurationReport):
         self.logger.critical("===== Curation Report =====")

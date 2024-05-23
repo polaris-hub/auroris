@@ -8,7 +8,7 @@ from PIL.Image import Image as ImageType
 from pydantic import BaseModel, ConfigDict, Field, PrivateAttr
 
 from auroris import __version__
-from auroris.utils import fig2img, bytes2img
+from auroris.utils import bytes2img, fig2img
 
 
 class AnnotatedImage(BaseModel):
@@ -71,11 +71,7 @@ class CurationReport(BaseModel):
 
     def log_image(
         self,
-        image_or_figure: Union[
-            ImageType,
-            Figure,
-            ByteString,
-        ],
+        image_or_figure: Union[ImageType, Figure, ByteString],
         title: Optional[str] = None,
         description: Optional[str] = None,
     ):
