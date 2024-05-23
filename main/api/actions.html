@@ -10,28 +10,28 @@
       
       
       
-        <link rel="canonical" href="https://github.com/polaris-hub/auroris/main/api/actions/discretization.html">
+        <link rel="canonical" href="https://github.com/polaris-hub/auroris/main/api/actions.html">
       
       
-        <link rel="prev" href="deduplication.html">
+        <link rel="prev" href="curator.html">
       
       
-        <link rel="next" href="mol.html">
+        <link rel="next" href="functional.html">
       
       
-      <link rel="icon" href="../../images/logo-black.svg">
-      <meta name="generator" content="mkdocs-1.6.0, mkdocs-material-9.5.21">
+      <link rel="icon" href="../images/logo-black.svg">
+      <meta name="generator" content="mkdocs-1.6.0, mkdocs-material-9.5.24">
     
     
       
-        <title>Discretization - Auroris</title>
+        <title>Actions - Auroris</title>
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.66ac8b77.min.css">
+      <link rel="stylesheet" href="../assets/stylesheets/main.6543a935.min.css">
       
         
-        <link rel="stylesheet" href="../../assets/stylesheets/palette.06af60db.min.css">
+        <link rel="stylesheet" href="../assets/stylesheets/palette.06af60db.min.css">
       
       
 
@@ -50,11 +50,11 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/_mkdocstrings.css">
+      <link rel="stylesheet" href="../assets/_mkdocstrings.css">
     
-      <link rel="stylesheet" href="../../assets/css/custom-auroris.css">
+      <link rel="stylesheet" href="../assets/css/custom-auroris.css">
     
-    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
   
@@ -88,7 +88,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#auroris.curation.actions.Discretization" class="md-skip">
+        <a href="#auroris.curation.actions.BaseAction" class="md-skip">
           Skip to content
         </a>
       
@@ -106,9 +106,9 @@
 
 <header class="md-header" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href="../.." title="Auroris" class="md-header__button md-logo" aria-label="Auroris" data-md-component="logo">
+    <a href=".." title="Auroris" class="md-header__button md-logo" aria-label="Auroris" data-md-component="logo">
       
-  <img src="../../images/logo-white.svg" alt="logo">
+  <img src="../images/logo-white.svg" alt="logo">
 
     </a>
     <label class="md-header__button md-icon" for="__drawer">
@@ -125,7 +125,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Discretization
+              Actions
             
           </span>
         </div>
@@ -208,7 +208,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../index.html" class="md-tabs__link">
+        <a href="../index.html" class="md-tabs__link">
           
   
   Getting started
@@ -226,7 +226,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../tutorials/getting_started.html" class="md-tabs__link">
+        <a href="../tutorials/getting_started.html" class="md-tabs__link">
           
   
   Tutorials
@@ -245,14 +245,25 @@
   
     
     
+      
+  
+  
+    
+  
+  
+    
+    
       <li class="md-tabs__item md-tabs__item--active">
-        <a href="../curator.html" class="md-tabs__link">
+        <a href="curator.html" class="md-tabs__link">
           
   
   API Reference
 
         </a>
       </li>
+    
+  
+
     
   
 
@@ -313,9 +324,9 @@
 
 <nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="../.." title="Auroris" class="md-nav__button md-logo" aria-label="Auroris" data-md-component="logo">
+    <a href=".." title="Auroris" class="md-nav__button md-logo" aria-label="Auroris" data-md-component="logo">
       
-  <img src="../../images/logo-white.svg" alt="logo">
+  <img src="../images/logo-white.svg" alt="logo">
 
     </a>
     Auroris
@@ -382,7 +393,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../index.html" class="md-nav__link">
+      <a href="../index.html" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -450,7 +461,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../tutorials/getting_started.html" class="md-nav__link">
+      <a href="../tutorials/getting_started.html" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -520,27 +531,6 @@
                 
   
   
-  
-  
-    <li class="md-nav__item">
-      <a href="../curator.html" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    Curator
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
     
   
   
@@ -561,24 +551,24 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_2" checked>
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_1" checked>
         
           
-          <label class="md-nav__link" for="__nav_3_2" id="__nav_3_2_label" tabindex="">
+          <label class="md-nav__link" for="__nav_3_1" id="__nav_3_1_label" tabindex="">
             
   
   <span class="md-ellipsis">
-    Actions
+    Core
   </span>
   
 
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_2_label" aria-expanded="true">
-          <label class="md-nav__title" for="__nav_3_2">
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_1_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_3_1">
             <span class="md-nav__icon md-icon"></span>
-            Actions
+            Core
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
             
@@ -589,11 +579,11 @@
   
   
     <li class="md-nav__item">
-      <a href="deduplication.html" class="md-nav__link">
+      <a href="curator.html" class="md-nav__link">
         
   
   <span class="md-ellipsis">
-    Deduplication
+    Curator
   </span>
   
 
@@ -621,18 +611,18 @@
           
   
   <span class="md-ellipsis">
-    Discretization
+    Actions
   </span>
   
 
           <span class="md-nav__icon md-icon"></span>
         </label>
       
-      <a href="discretization.html" class="md-nav__link md-nav__link--active">
+      <a href="actions.html" class="md-nav__link md-nav__link--active">
         
   
   <span class="md-ellipsis">
-    Discretization
+    Actions
   </span>
   
 
@@ -652,9 +642,63 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#auroris.curation.actions.BaseAction" class="md-nav__link">
+    <span class="md-ellipsis">
+      BaseAction
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#auroris.curation.actions.StereoIsomerACDetection" class="md-nav__link">
+    <span class="md-ellipsis">
+      StereoIsomerACDetection
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#auroris.curation.actions.Deduplication" class="md-nav__link">
+    <span class="md-ellipsis">
+      Deduplication
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#auroris.curation.actions.Discretization" class="md-nav__link">
     <span class="md-ellipsis">
       Discretization
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#auroris.curation.actions.ContinuousDistributionVisualization" class="md-nav__link">
+    <span class="md-ellipsis">
+      ContinuousDistributionVisualization
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#auroris.curation.actions.MoleculeCuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      MoleculeCuration
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#auroris.curation.actions.OutlierDetection" class="md-nav__link">
+    <span class="md-ellipsis">
+      OutlierDetection
     </span>
   </a>
   
@@ -669,6 +713,57 @@
 
               
             
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+      
+      
+        
+          
+          
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_2" id="__nav_3_2_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Functional API
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_2">
+            <span class="md-nav__icon md-icon"></span>
+            Functional API
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
               
                 
   
@@ -676,11 +771,11 @@
   
   
     <li class="md-nav__item">
-      <a href="mol.html" class="md-nav__link">
+      <a href="functional.html" class="md-nav__link">
         
   
   <span class="md-ellipsis">
-    Molecule Curation
+    Curation
   </span>
   
 
@@ -697,32 +792,11 @@
   
   
     <li class="md-nav__item">
-      <a href="outlier_detection.html" class="md-nav__link">
+      <a href="visualization.html" class="md-nav__link">
         
   
   <span class="md-ellipsis">
-    Outlier Detection
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="stereo_ac.html" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    Stereoisomer AC
+    Visualization
   </span>
   
 
@@ -746,20 +820,42 @@
   
   
   
-    <li class="md-nav__item">
-      <a href="../functional.html" class="md-nav__link">
+    
+    
+    
+      
+      
         
+          
+          
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_3" id="__nav_3_3_label" tabindex="">
+            
   
   <span class="md-ellipsis">
-    Functional
+    Misc
   </span>
   
 
-      </a>
-    </li>
-  
-
-              
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_3">
+            <span class="md-nav__icon md-icon"></span>
+            Misc
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
             
               
                 
@@ -768,28 +864,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../visualization.html" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    Visualization
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../types.html" class="md-nav__link">
+      <a href="types.html" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -798,6 +873,35 @@
   
 
       </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="utils.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Utils
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
     </li>
   
 
@@ -875,9 +979,63 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#auroris.curation.actions.BaseAction" class="md-nav__link">
+    <span class="md-ellipsis">
+      BaseAction
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#auroris.curation.actions.StereoIsomerACDetection" class="md-nav__link">
+    <span class="md-ellipsis">
+      StereoIsomerACDetection
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#auroris.curation.actions.Deduplication" class="md-nav__link">
+    <span class="md-ellipsis">
+      Deduplication
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#auroris.curation.actions.Discretization" class="md-nav__link">
     <span class="md-ellipsis">
       Discretization
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#auroris.curation.actions.ContinuousDistributionVisualization" class="md-nav__link">
+    <span class="md-ellipsis">
+      ContinuousDistributionVisualization
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#auroris.curation.actions.MoleculeCuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      MoleculeCuration
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#auroris.curation.actions.OutlierDetection" class="md-nav__link">
+    <span class="md-ellipsis">
+      OutlierDetection
     </span>
   </a>
   
@@ -901,26 +1059,72 @@
   
 
 
-  <h1>Discretization</h1>
+  <h1>Actions</h1>
 
 <div class="doc doc-object doc-class">
 
 
 
-<h3 id="auroris.curation.actions.Discretization" class="doc doc-heading">
-          <span class="doc doc-object-name doc-class-name">auroris.curation.actions.Discretization</span>
+<h3 id="auroris.curation.actions.BaseAction" class="doc doc-heading">
+            <span class="doc doc-object-name doc-class-name">auroris.curation.actions.BaseAction</span>
 
 
 </h3>
 
 
-  <div class="doc doc-contents first">
-          <p class="doc doc-class-bases">
-            Bases: <code><span title="auroris.curation.actions._base.BaseAction">BaseAction</span></code></p>
+    <div class="doc doc-contents first">
+            <p class="doc doc-class-bases">
+              Bases: <code><span title="pydantic.BaseModel">BaseModel</span></code>, <code><span title="abc.ABC">ABC</span></code></p>
+
+
+      <p>An action in the curation process.</p>
+
+
+<details class="info" open>
+  <summary>The importance of reproducibility</summary>
+  <p>One of the main goals in designing <code>auroris</code> is to make it easy to reproduce the curation process.
+Reproducibility is key to scientific research. This is why a BaseAction needs to be serializable and
+uniquely identified by a <code>name</code>.</p>
+</details>
+
+<p><span class="doc-section-title">Attributes:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td><code><span title="auroris.curation.actions.BaseAction.name">name</span></code></td>
+            <td>
+                  <code>str</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>The name that uniquely identifies the action. This is used to serialize and deserialize the action.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="auroris.curation.actions.BaseAction.prefix">prefix</span></code></td>
+            <td>
+                  <code>str</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>This prefix is used when an action adds columns to a dataset.
+If not set, it defaults to the name in uppercase.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
 
 
-  
 
   <div class="doc doc-children">
 
@@ -936,10 +1140,442 @@
 
   </div>
 
+    </div>
+
+</div><hr />
+
+
+<div class="doc doc-object doc-module">
+
+
+
+
+    <div class="doc doc-contents first">
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-class">
+
+
+
+<h3 id="auroris.curation.actions.StereoIsomerACDetection" class="doc doc-heading">
+            <span class="doc doc-object-name doc-class-name">StereoIsomerACDetection</span>
+
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+            <p class="doc doc-class-bases">
+              Bases: <code><a class="autorefs autorefs-internal" title="auroris.curation.actions._base.BaseAction" href="#auroris.curation.actions.BaseAction">BaseAction</a></code></p>
+
+
+      <p>Automatic detection of activity shift between stereoisomers.</p>
+<p>See <a class="autorefs autorefs-internal" href="functional.html#auroris.curation.functional.detect_streoisomer_activity_cliff"><code>auroris.curation.functional.detect_streoisomer_activity_cliff</code></a> for the docs of the
+<code>stereoisomer_id_col</code>, <code>y_cols</code> and <code>threshold</code> attributes</p>
+
+
+<p><span class="doc-section-title">Attributes:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td><code><span title="auroris.curation.actions.StereoIsomerACDetection.mol_col">mol_col</span></code></td>
+            <td>
+                  <code><span title="typing.Optional">Optional</span>[str]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Column with the SMILES or RDKit Molecule objects.
+If specified, will be used to render an image for the activity cliffs.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
   </div>
 
+    </div>
 
 </div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h3 id="auroris.curation.actions.Deduplication" class="doc doc-heading">
+            <span class="doc doc-object-name doc-class-name">Deduplication</span>
+
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+            <p class="doc doc-class-bases">
+              Bases: <code><a class="autorefs autorefs-internal" title="auroris.curation.actions._base.BaseAction" href="#auroris.curation.actions.BaseAction">BaseAction</a></code></p>
+
+
+      <p>Automatic detection of outliers.</p>
+<p>See <a class="autorefs autorefs-internal" href="functional.html#auroris.curation.functional.deduplicate"><code>auroris.curation.functional.deduplicate</code></a> for the docs of the
+<code>deduplicate_on</code>, <code>y_cols</code>, <code>keep</code> and <code>method</code> attributes</p>
+
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h3 id="auroris.curation.actions.Discretization" class="doc doc-heading">
+            <span class="doc doc-object-name doc-class-name">Discretization</span>
+
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+            <p class="doc doc-class-bases">
+              Bases: <code><a class="autorefs autorefs-internal" title="auroris.curation.actions._base.BaseAction" href="#auroris.curation.actions.BaseAction">BaseAction</a></code></p>
+
+
+      <p>Thresholding bioactivity columns to binary or multiclass labels.</p>
+<p>See <a class="autorefs autorefs-internal" href="functional.html#auroris.curation.functional.discretize"><code>auroris.curation.functional.discretize</code></a> for the docs of the
+<code>thresholds</code>, <code>inplace</code>, <code>allow_nan</code> and <code>label_order</code> attributes</p>
+
+
+<p><span class="doc-section-title">Attributes:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td><code><span title="auroris.curation.actions.Discretization.input_column">input_column</span></code></td>
+            <td>
+                  <code>str</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>The column to discretize.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="auroris.curation.actions.Discretization.log_scale">log_scale</span></code></td>
+            <td>
+                  <code>bool</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Whether a visual depiction of the discretization should be on a log scale.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h3 id="auroris.curation.actions.ContinuousDistributionVisualization" class="doc doc-heading">
+            <span class="doc doc-object-name doc-class-name">ContinuousDistributionVisualization</span>
+
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+            <p class="doc doc-class-bases">
+              Bases: <code><a class="autorefs autorefs-internal" title="auroris.curation.actions._base.BaseAction" href="#auroris.curation.actions.BaseAction">BaseAction</a></code></p>
+
+
+      <p>Visualize one or more continuous distribution(s).</p>
+<p>See <a class="autorefs autorefs-internal" href="visualization.html#auroris.visualization.visualize_continuous_distribution"><code>auroris.visualization.visualize_continuous_distribution</code></a> for the docs of the
+<code>log_scale</code> and <code>bins</code> attributes</p>
+
+
+<p><span class="doc-section-title">Attributes:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td><code><span title="auroris.curation.actions.ContinuousDistributionVisualization.y_cols">y_cols</span></code></td>
+            <td>
+                  <code><span title="typing.List">List</span>[str]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>The columns whose distributions should be visualized.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h3 id="auroris.curation.actions.MoleculeCuration" class="doc doc-heading">
+            <span class="doc doc-object-name doc-class-name">MoleculeCuration</span>
+
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+            <p class="doc doc-class-bases">
+              Bases: <code><a class="autorefs autorefs-internal" title="auroris.curation.actions._base.BaseAction" href="#auroris.curation.actions.BaseAction">BaseAction</a></code></p>
+
+
+      <p>Automated molecule curation and chemistry space distribution.</p>
+<p>See <a class="autorefs autorefs-internal" href="functional.html#auroris.curation.functional.curate_molecules"><code>auroris.curation.functional.curate_molecules</code></a> for the docs of the
+<code>remove_salt_solvent</code>, <code>remove_stereo</code>, <code>count_stereoisomers</code>, and <code>count_stereocenters</code> attributes</p>
+
+
+<p><span class="doc-section-title">Attributes:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td><code><span title="auroris.curation.actions.MoleculeCuration.input_column">input_column</span></code></td>
+            <td>
+                  <code>str</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>The name of the column that has the molecules (either <code>dm.Mol</code> objects or SMILES).</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="auroris.curation.actions.MoleculeCuration.X_col">X_col</span></code></td>
+            <td>
+                  <code><span title="typing.Optional">Optional</span>[str]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Column with custom features for each of the molecules. If None, will use ECFP.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="auroris.curation.actions.MoleculeCuration.y_cols">y_cols</span></code></td>
+            <td>
+                  <code><span title="typing.Optional">Optional</span>[<span title="typing.Union">Union</span>[str, <span title="typing.List">List</span>[str]]]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Column names for bioactivities, which will be used to colorcode the chemical space visualization.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h3 id="auroris.curation.actions.OutlierDetection" class="doc doc-heading">
+            <span class="doc doc-object-name doc-class-name">OutlierDetection</span>
+
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+            <p class="doc doc-class-bases">
+              Bases: <code><a class="autorefs autorefs-internal" title="auroris.curation.actions._base.BaseAction" href="#auroris.curation.actions.BaseAction">BaseAction</a></code></p>
+
+
+      <p>Automatic detection of outliers.</p>
+<p>See <a class="autorefs autorefs-internal" href="functional.html#auroris.curation.functional.detect_outliers"><code>auroris.curation.functional.detect_outliers</code></a> for the docs of the
+<code>method</code> and <code>kwargs</code> attributes</p>
+
+
+<p><span class="doc-section-title">Attributes:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td><code><span title="auroris.curation.actions.OutlierDetection.columns">columns</span></code></td>
+            <td>
+                  <code><span title="typing.List">List</span>[str]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>The columns for which to detect outliers.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+
+
+
+  </div>
+
+    </div>
+
+</div><hr />
 
 
 
@@ -1017,7 +1653,7 @@
       <nav class="md-footer__inner md-grid" aria-label="Footer" >
         
           
-          <a href="deduplication.html" class="md-footer__link md-footer__link--prev" aria-label="Previous: Deduplication">
+          <a href="curator.html" class="md-footer__link md-footer__link--prev" aria-label="Previous: Curator">
             <div class="md-footer__button md-icon">
               
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
@@ -1027,20 +1663,20 @@
                 Previous
               </span>
               <div class="md-ellipsis">
-                Deduplication
+                Curator
               </div>
             </div>
           </a>
         
         
           
-          <a href="mol.html" class="md-footer__link md-footer__link--next" aria-label="Next: Molecule Curation">
+          <a href="functional.html" class="md-footer__link md-footer__link--next" aria-label="Next: Curation">
             <div class="md-footer__title">
               <span class="md-footer__direction">
                 Next
               </span>
               <div class="md-ellipsis">
-                Molecule Curation
+                Curation
               </div>
             </div>
             <div class="md-footer__button md-icon">
@@ -1152,10 +1788,10 @@
       </div>
       <script>var consent=__md_get("__consent");if(consent)for(var input of document.forms.consent.elements)input.name&&(input.checked=consent[input.name]||!1);else"file:"!==location.protocol&&setTimeout(function(){document.querySelector("[data-md-component=consent]").hidden=!1},250);var action,form=document.forms.consent;for(action of["submit","reset"])form.addEventListener(action,function(e){if(e.preventDefault(),"reset"===e.type)for(var n of document.forms.consent.elements)n.name&&(n.checked=!1);__md_set("__consent",Object.fromEntries(Array.from(new FormData(form).keys()).map(function(e){return[e,!0]}))),location.hash="",location.reload()})</script>
     
-    <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.tabs", "navigation.sections", "navigation.path", "navigation.top", "navigation.footer", "toc.follow", "content.code.copy", "content.code.annotate"], "search": "../../assets/javascripts/workers/search.b8dbb3d2.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
+    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.tabs", "navigation.sections", "navigation.path", "navigation.top", "navigation.footer", "toc.follow", "content.code.copy", "content.code.annotate"], "search": "../assets/javascripts/workers/search.b8dbb3d2.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
     
     
-      <script src="../../assets/javascripts/bundle.a7c05c9e.min.js"></script>
+      <script src="../assets/javascripts/bundle.081f42fc.min.js"></script>
       
         <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
       
