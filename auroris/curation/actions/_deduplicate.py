@@ -53,7 +53,12 @@ def deduplicate(
 class Deduplication(BaseAction):
     """
     Automatic detection of outliers.
+
+    See [`auroris.curation.functional.deduplicate`][] for the docs of the
+    `deduplicate_on`, `y_cols`, `keep` and `method` attributes
     """
+
+    name: Literal["deduplicate"] = "deduplicate"
 
     deduplicate_on: Optional[Union[str, List[str]]] = None
     y_cols: Optional[Union[str, List[str]]] = None
@@ -67,10 +72,14 @@ class Deduplication(BaseAction):
         verbosity: VerbosityLevel = VerbosityLevel.NORMAL,
         parallelized_kwargs: Optional[Dict] = None,
     ):
-        return deduplicate(
+        dataset_dedup = deduplicate(
             dataset,
             deduplicate_on=self.deduplicate_on,
             y_cols=self.y_cols,
             keep=self.keep,
             method=self.method,
         )
+        if report is not None:
+            num_duplicates = len(dataset) - len(dataset_dedup)
+            report.log(f"Deduplication merged and removed {num_duplicates} duplicated molecules from dataset")
+        return dataset_dedup

@@ -1,5 +1,7 @@
 import os
 
+from pandas.core.api import DataFrame as DataFrame
+
 from auroris.curation import Curator
 from auroris.curation.actions import Discretization, MoleculeCuration, OutlierDetection
 from auroris.report.broadcaster import HTMLBroadcaster, LoggerBroadcaster
@@ -13,17 +15,20 @@ except ImportError:
 def test_curator_save_load(tmpdir):
     curator = Curator(
         steps=[
-            OutlierDetection(method="zscore", columns=["outlier_column"]),
             MoleculeCuration(input_column="smiles"),
+            OutlierDetection(method="zscore", columns=["outlier_column"]),
         ],
     )
     path = os.path.join(tmpdir, "curator.json")
     curator.to_json(path)
-    curator.from_json(path)
+    curator_reload = curator.from_json(path)
 
-    assert len(curator.steps) == 2
-    assert curator.steps[0].method == "zscore"
-    assert curator.steps[0].columns == ["outlier_column"]
+    assert len(curator.steps) == len(curator_reload.steps)
+    for step1, step2 in zip(curator.steps, curator_reload.steps):
+        assert step1 == step2
+
+    assert curator.steps[1].method == "zscore"
+    assert curator.steps[1].columns == ["outlier_column"]
 
 
 def test_curator_integration(dataset, tmpdir):

@@ -10,25 +10,23 @@ if TYPE_CHECKING:
     from auroris.report import CurationReport
 
 
-ACTION_REGISTRY = []
-
-
 class BaseAction(BaseModel, abc.ABC):
     """
     An action in the curation process.
 
-    Args:
-        prefix: If the action adds columns, use this prefix.
-        completed: If the action has completed.
-        dep_action: Name of dependent action.
+    Info: The importance of reproducibility
+        One of the main goals in designing `auroris` is to make it easy to reproduce the curation process.
+        Reproducibility is key to scientific research. This is why a BaseAction needs to be serializable and
+        uniquely identified by a `name`.
+
+    Attributes:
+        name: The name that uniquely identifies the action. This is used to serialize and deserialize the action.
+        prefix: This prefix is used when an action adds columns to a dataset.
+            If not set, it defaults to the name in uppercase.
     """
 
+    name: str
     prefix: str = None
-
-    @property
-    def name(self) -> str:
-        """The name of the action. Needs to be unique."""
-        return self.__class__.__name__
 
     @model_validator(mode="after")
     @classmethod
@@ -52,7 +50,3 @@ class BaseAction(BaseModel, abc.ABC):
 
     def __call__(self, dataset: pd.DataFrame):
         return self.transform(dataset)
-
-    def __init_subclass__(cls, **kwargs):
-        super().__init_subclass__(**kwargs)
-        ACTION_REGISTRY.append(cls)

@@ -43,6 +43,7 @@ dependencies = [
     "datamol >=0.12.1",
     "pillow",
     "fsspec",
+    "pyarrow",
 ]
 
 [project.optional-dependencies]

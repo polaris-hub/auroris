@@ -42,11 +42,11 @@ def visualize_continuous_distribution(
     for threshold in bins:
         if log_scale and lower != -np.inf:
             lower = np.log(lower)
+
         if log_scale and threshold != np.inf:
             threshold = np.log(threshold)
 
         mask = (xs > lower) & (xs <= threshold)
-        lower = threshold
 
         # Update xs to make sure they cover the range even if the
         # coordinates don't fully cover it
@@ -75,16 +75,24 @@ def visualize_continuous_distribution(
 
         ax.fill_between(masked_xs, ys[mask], alpha=0.5, label=label)
         ax.plot([threshold, threshold], [ylim[0], ys[mask][-1]], "k--")
+        lower = threshold
 
     ax.legend()
     return fig
 
 
 def visualize_distribution_with_outliers(
-    values: np.ndarray,
-    is_outlier: Optional[List[bool]] = None,
+    values: np.ndarray, is_outlier: Optional[List[bool]] = None, title: str = "Probability Plot"
 ):
-    """Visualize the distribution of the data and highlight the potential outliers."""
+    """
+    Visualize the distribution of the data and highlight the potential outliers.
+
+    Args:
+        values: Values for visulization.
+        is_outlier: List of outlier flag.
+        title: Title of plot
+
+    """
 
     if is_outlier is None:
         # Import here to prevent ciruclar imports
@@ -97,14 +105,23 @@ def visualize_distribution_with_outliers(
     values = values[sorted_ind]
     is_outlier = is_outlier[sorted_ind]
 
-    with create_figure(n_plots=2) as (fig, axes):
-        sns.scatterplot(
-            x=np.arange(len(values)),
-            y=values,
-            hue=is_outlier,
-            palette={1.0: "red", 0.0: "navy", 0.5: "grey"},
-            ax=axes[0],
-        )
-        stats.probplot(values, dist="norm", plot=axes[1])
+    with create_figure(n_plots=1) as (fig, axes):
+        res = stats.probplot(values, dist="norm", fit=True, plot=axes[0])
+        x = res[0][0]
+        y = res[0][1]
+
+        # Specify the indices of data points to highlight
+        highlight_indices = np.argwhere(is_outlier.__eq__(True)).flatten()
+        highlight_color = "red"
+
+        # Overlay specific points with different colors
+        for idx in highlight_indices:
+            axes[0].plot(
+                x[idx], y[idx], marker="o", markersize=8, color=highlight_color
+            )  # Red circles for highlighted points
+
+        axes[0].set_xlabel("Theoretical quantiles")
+        axes[0].set_ylabel("Ordered Values")
+        axes[0].set_title(title)
 
     return fig

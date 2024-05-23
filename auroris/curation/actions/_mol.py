@@ -1,5 +1,5 @@
 from functools import partial
-from typing import Dict, List, Optional, Tuple, Union
+from typing import Dict, List, Literal, Optional, Tuple, Union
 
 import datamol as dm
 import numpy as np
@@ -10,6 +10,7 @@ from auroris.curation.actions._base import BaseAction
 from auroris.report import CurationReport
 from auroris.types import VerbosityLevel
 from auroris.visualization import visualize_chemspace
+from auroris.visualization.utils import create_figure
 
 
 def curate_molecules(
@@ -20,7 +21,23 @@ def curate_molecules(
     count_stereoisomers: bool = True,
     count_stereocenters: bool = True,
     **parallelized_kwargs,
-):
+) -> Tuple:
+    """
+    Curate a list of molecules.
+
+    Args:
+        mols: List of molecules.
+        progress: Whether show curation progress.
+        remove_salt_solvent: Whether remove salt and solvent from molecule.
+        remove_stereo: Whether remove stereo chemistry information from molecule.
+        count_stereoisomers: Whether count the number of stereoisomers of molecule.
+        count_stereocenters: Whether count the number of stereocenters of molecule.
+
+    Returns:
+        mol_dict: Dictionary of molecule and additional metadata
+        num_invalid: Number of invßßalid molecules
+
+    """
     fn = partial(
         _curate_molecule,
         remove_salt_solvent=remove_salt_solvent,
@@ -186,10 +203,11 @@ def _get_mol_dict(
 
 
 def _num_stereo_centers(mol: dm.Mol) -> Tuple[int]:
-    """Get the number of defined and undefined stereo centers of a given molecule
-        by accessing the all and only defined stereo centers.
-        It's to facilitate the analysis of the stereo isomers.
-        None will be return if there is no stereo centers in the molecule.
+    """
+    Get the number of defined and undefined stereo centers of a given molecule
+    by accessing the all and only defined stereo centers.
+    It's to facilitate the analysis of the stereo isomers.
+    None will be return if there is no stereo centers in the molecule.
 
      Args:
          mol: Molecule
@@ -213,21 +231,28 @@ def _num_stereo_centers(mol: dm.Mol) -> Tuple[int]:
 
 class MoleculeCuration(BaseAction):
     """
+    Automated molecule curation and chemistry space distribution.
+
+    See [`auroris.curation.functional.curate_molecules`][] for the docs of the
+    `remove_salt_solvent`, `remove_stereo`, `count_stereoisomers`, and `count_stereocenters` attributes
+
     Attributes:
         input_column: The name of the column that has the molecules (either `dm.Mol` objects or SMILES).
-        remove_salt_solvent: When set to 'True', all disconnected salts and solvents
-            will be removed from molecule. In most of the cases, it is recommended to remove the salts/solvents.
-        remove_stereo: Whether remove stereochemistry information from molecule.
-            If it's known that the stereochemistry do not contribute to the bioactivity of interest,
-            the stereochemistry information can be removed.
+        X_col: Column with custom features for each of the molecules. If None, will use ECFP.
+        y_cols: Column names for bioactivities, which will be used to colorcode the chemical space visualization.
     """
 
-    input_column: str
+    name: Literal["mol_curation"] = "mol_curation"
     prefix: str = "MOL_"
+
+    input_column: str
     remove_salt_solvent: bool = True
     remove_stereo: bool = False
     count_stereoisomers: bool = True
     count_stereocenters: bool = True
+
+    X_col: Optional[str] = None
+    y_cols: Optional[Union[str, List[str]]] = None
 
     def transform(
         self,
@@ -236,8 +261,8 @@ class MoleculeCuration(BaseAction):
         verbosity: VerbosityLevel = VerbosityLevel.NORMAL,
         parallelized_kwargs: Optional[Dict] = None,
     ) -> pd.DataFrame:
+        # Run the curation
         mols = dataset[self.input_column].values
-
         parallelized_kwargs = parallelized_kwargs or {}
         mol_dict, num_invalid = curate_molecules(
             mols,
@@ -257,6 +282,9 @@ class MoleculeCuration(BaseAction):
 
         dataset = pd.concat([dataset, df], axis=1)
 
+        # Log information to the report
+        # - New columns with the curated molecule information
+
         if report is not None:
             for col in df.columns:
                 report.log_new_column(col)
@@ -264,16 +292,24 @@ class MoleculeCuration(BaseAction):
             smiles_col = self.get_column_name("smiles")
             smiles = dataset[smiles_col].dropna().values
 
-            with dm.without_rdkit_log():
-                # Temporary disable logs because of deprecation warning
-                X = np.array([dm.to_fp(smi) for smi in smiles])
+            if self.X_col is None:
+                featurizer = "ECFP"
+                with dm.without_rdkit_log():
+                    X = np.array([dm.to_fp(smi) for smi in smiles])
+                report.log("Default `ecfp` fingerprint is used to visualize the chemical space.")
 
-            fig = visualize_chemspace(X=X)
-            report.log_image(fig, "Distribution in Chemical Space")
+            else:
+                featurizer = self.X_col
+                X = dataset[self.X_col].values
+
+            # list of data per column
+            y = dataset[self.y_cols].T.values.tolist() if self.y_cols else None
+
+            fig = visualize_chemspace(X=X, y=y, labels=self.y_cols)
+            report.log_image(fig, title=f"Distribution in Chemical Space - {featurizer}")
 
             if self.count_stereocenters:
                 # Plot all compounds with undefined stereocenters for visual inspection
-
                 undefined_col = self.get_column_name("num_undefined_stereo_center")
                 defined_col = self.get_column_name("num_defined_stereo_center")
 
@@ -288,13 +324,17 @@ class MoleculeCuration(BaseAction):
                         defined = row[defined_col]
                         legends.append(f"Undefined:{undefined}\n Definded:{defined}")
 
-                    image = dm.to_image(to_plot[smiles_col].tolist(), legends=legends, use_svg=False)
+                    with create_figure(n_plots=1, n_cols=1) as (image, _):
+                        dm.to_image(
+                            to_plot[smiles_col].tolist(), legends=legends, use_svg=False, returnPNG=True
+                        )
+
                     report.log_image(
                         image,
                         title="Molecules with undefined stereocenters",
-                        description=f"There are {num_mol_undefined} molecules with undefined stereocenter(s)."
-                        f"It's recommanded to use <auroris.curaion.action.StereoIsomerACDetection> and"
-                        f"check the stereoisomers and activity cliffs in the dataset.",
+                        description=f"There are {num_mol_undefined} molecules with undefined stereocenter(s). "
+                        "It's recommended to use <auroris.curation.action.StereoIsomerACDetection> and "
+                        "check the stereoisomers and activity cliffs in the dataset.",
                     )
 
         return dataset

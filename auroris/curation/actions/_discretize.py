@@ -17,7 +17,8 @@ def discretize(
     allow_nan: bool = True,
     label_order: Literal["ascending", "descending"] = "ascending",
 ) -> np.ndarray:
-    """Thresholding of array-like or scipy.sparse matrix into binary or multiclass labels.
+    """
+    Thresholding of array-like or scipy.sparse matrix into binary or multiclass labels.
 
     Args:
         X : The data to discretize, element by element.
@@ -76,13 +77,27 @@ def discretize(
 
 
 class Discretization(BaseAction):
-    input_column: str
+    """
+    Thresholding bioactivity columns to binary or multiclass labels.
+
+    See [`auroris.curation.functional.discretize`][] for the docs of the
+    `thresholds`, `inplace`, `allow_nan` and `label_order` attributes
+
+    Attributes:
+        input_column: The column to discretize.
+        log_scale: Whether a visual depiction of the discretization should be on a log scale.
+    """
+
+    name: Literal["discretize"] = "discretize"
     prefix: str = "CLS_"
+
+    input_column: str
     thresholds: List[float]
+
     inplace: bool = False
     allow_nan: bool = True
     label_order: Literal["ascending", "descending"] = "ascending"
-    log_scale: bool = True
+    log_scale: bool = False
 
     def transform(
         self,

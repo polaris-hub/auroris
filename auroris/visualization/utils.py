@@ -15,7 +15,7 @@ def create_figure(
     dpi: int = 150,
     seaborn_theme: Optional[str] = "whitegrid",
 ):
-    """Creates a figure with the desired size"""
+    """Creates a figure with the desired size and layout"""
 
     if seaborn_theme is not None:
         sns.set_theme(style=seaborn_theme)

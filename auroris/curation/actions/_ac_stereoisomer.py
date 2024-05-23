@@ -1,8 +1,9 @@
-from typing import Dict, List, Optional
+from typing import Dict, List, Literal, Optional
 
 import datamol as dm
 import numpy as np
 import pandas as pd
+from pydantic import Field
 
 from auroris.curation.actions._base import BaseAction
 from auroris.curation.actions._outlier import modified_zscore
@@ -15,9 +16,19 @@ def detect_streoisomer_activity_cliff(
     dataset: pd.DataFrame,
     stereoisomer_id_col: str,
     y_cols: List[str],
-    threshold: float = 1.0,
+    threshold: float = 2.0,
     prefix: str = "AC_",
-):
+) -> pd.DataFrame:
+    """
+    Detect activity cliff among stereoisomers based on classification label or pre-defined threshold for continuous values.
+
+    Args:
+        dataset: Dataframe
+        stereoisomer_id_col: Column which identifies the stereoisomers
+        y_cols: List of columns for bioactivities
+        threshold: Threshold to identify the activity cliff. Currently, the difference of zscores between isomers are used for identification.
+        prefix: Prefix for the adding columns
+    """
     dataset_ori = dataset.copy(deep=True)
     ac_cols = {y_col: [] for y_col in y_cols}
     group_index_list = np.array(
@@ -51,14 +62,23 @@ def detect_streoisomer_activity_cliff(
 
 class StereoIsomerACDetection(BaseAction):
     """
-    Automatic detection of outliers.
+    Automatic detection of activity shift between stereoisomers.
+
+    See [`auroris.curation.functional.detect_streoisomer_activity_cliff`][] for the docs of the
+    `stereoisomer_id_col`, `y_cols` and `threshold` attributes
+
+    Attributes:
+        mol_col: Column with the SMILES or RDKit Molecule objects.
+            If specified, will be used to render an image for the activity cliffs.
     """
 
-    stereoisomer_id_col: str
-    y_cols: List[str]
-    threshold: float = 2.0
+    name: Literal["ac_stereoisomer"] = "ac_stereoisomer"
     prefix: str = "AC_"
-    mol_col: str = "MOL_smiles"
+
+    stereoisomer_id_col: str = "MOL_molhash_id_no_stereo"
+    y_cols: List[str] = Field(default_factory=list)
+    threshold: float = 2.0
+    mol_col: Optional[str] = "MOL_smiles"
 
     def transform(
         self,
@@ -75,12 +95,17 @@ class StereoIsomerACDetection(BaseAction):
             prefix=self.prefix,
         )
 
+        # Log the following information to the report:
+        # - Newly added columns
+        # - Number of activity cliffs found
+        # - Image of the activity cliffs
+
         if report is not None:
             for col in self.y_cols:
                 col_with_prefix = self.get_column_name(col)
                 report.log_new_column(col_with_prefix)
 
-                has_cliff = dataset[col_with_prefix].notna()
+                has_cliff = dataset[col_with_prefix]
                 num_cliff = has_cliff.sum()
 
                 if num_cliff > 0:
@@ -88,14 +113,17 @@ class StereoIsomerACDetection(BaseAction):
                         f"Found {num_cliff} activity cliffs among stereoisomers "
                         f"with respect to the {col} column."
                     )
-                    to_plot = dataset.loc[has_cliff, self.mol_col]
-                    legends = (col + dataset.loc[has_cliff, col].astype(str)).tolist()
 
-                    image = dm.to_image([dm.to_mol(s) for s in to_plot], legends=legends, use_svg=False)
-                    report.log_image(image)
+                    if self.mol_col is not None:
+                        to_plot = dataset.loc[has_cliff, self.mol_col]
+                        legends = (col + dataset.loc[has_cliff, col].astype(str)).tolist()
+                        image = dm.to_image([dm.to_mol(s) for s in to_plot], legends=legends, use_svg=False)
+                        report.log_image(
+                            image_or_figure=image, title="Detection of activity shifts among stereoisomers"
+                        )
 
                 else:
                     report.log(
-                        "Found no activity cliffs among stereoisomers with respect to the {col} column."
+                        f"Found no activity cliffs among stereoisomers with respect to the {col} column."
                     )
         return dataset

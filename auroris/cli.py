@@ -1,5 +1,6 @@
+from typing import Optional
+
 import datamol as dm
-import pandas as pd
 import typer
 
 from auroris.curation import Curator
@@ -9,18 +10,25 @@ app = typer.Typer()
 
 
 @app.command()
-def curate(config_path: str, dataset_path: str, destination: str, overwrite: bool = False):
-    # Load data
-    dataset = pd.read_csv(dataset_path)
+def curate(config_path: str, destination: str, dataset_path: Optional[str] = None, overwrite: bool = False):
+    # Create the curator
     curator = Curator.from_json(config_path)
 
+    # Overwrite the source dataset if it is set
+    if dataset_path is not None:
+        curator.src_dataset_path = dataset_path
+
     # Run curation
-    dataset, report = curator(dataset)
+    dataset, report = curator.transform()
 
     # Save dataset
     dm.fs.mkdir(destination, exist_ok=overwrite)
-    path = dm.fs.join(destination, "curated.csv")
-    dataset.to_csv(path, index=False)
+    path = dm.fs.join(destination, "curated.parquet")
+    dataset.to_parquet(path, index=False)
+
+    # Save a copy of the curation config
+    config_destination = dm.fs.join(destination, "config.json")
+    curator.to_json(config_destination)
 
     # Save report as HTML
     report_destination = dm.fs.join(destination, "report")

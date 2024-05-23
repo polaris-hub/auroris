@@ -33,7 +33,7 @@ class LoggerBroadcaster(ReportBroadcaster):
 
     def __init__(self, report: CurationReport):
         super().__init__(report)
-        self.logger = logging.getLogger()
+        self.logger = logging.getLogger(self.__class__.__name__)
         self.logger.setLevel(logging.DEBUG)
 
         handler = logging.StreamHandler(sys.stdout)
@@ -51,6 +51,7 @@ class LoggerBroadcaster(ReportBroadcaster):
                 self.render_log(log)
             for image in section.images:
                 self.render_image(image)
+        self.on_report_end(self._report)
 
     def render_log(self, message: str):
         self.logger.debug(f"[LOG]: {message}")
@@ -66,3 +67,6 @@ class LoggerBroadcaster(ReportBroadcaster):
         self.logger.critical("===== Curation Report =====")
         self.logger.debug(f"Time: {report.time_stamp.strftime('%Y-%m-%d %H:%M:%S')}")
         self.logger.debug(f"Version: {report.auroris_version}")
+
+    def on_report_end(self, report: CurationReport):
+        self.logger.critical("===== Curation Report END =====")

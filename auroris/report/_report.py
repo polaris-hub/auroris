@@ -8,7 +8,7 @@ from PIL.Image import Image as ImageType
 from pydantic import BaseModel, ConfigDict, Field, PrivateAttr
 
 from auroris import __version__
-from auroris.utils import fig2img
+from auroris.utils import bytes2img, fig2img
 
 
 class AnnotatedImage(BaseModel):
@@ -80,6 +80,8 @@ class CurationReport(BaseModel):
         if isinstance(image_or_figure, Figure):
             image = fig2img(image_or_figure)
             plt.close(image_or_figure)
+        elif isinstance(image_or_figure, ByteString):
+            image = bytes2img(image_or_figure)
         else:
             image = image_or_figure
 
