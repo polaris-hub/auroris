@@ -1,10 +1,9 @@
-from typing import Dict, List, Optional, Literal
-from pydantic import Field
+from typing import Dict, List, Literal, Optional
 
 import datamol as dm
 import numpy as np
 import pandas as pd
-
+from pydantic import Field
 
 from auroris.curation.actions._base import BaseAction
 from auroris.curation.actions._outlier import modified_zscore
@@ -64,19 +63,22 @@ def detect_streoisomer_activity_cliff(
 class StereoIsomerACDetection(BaseAction):
     """
     Automatic detection of activity shift between stereoisomers.
+
+    See [`auroris.curation.functional.detect_streoisomer_activity_cliff`][] for the docs of the
+    `stereoisomer_id_col`, `y_cols` and `threshold` attributes
+
+    Attributes:
+        mol_col: Column with the SMILES or RDKit Molecule objects.
+            If specified, will be used to render an image for the activity cliffs.
     """
 
-    stereoisomer_id_col: str = Field(
-        default="MOL_molhash_id_no_stereo", description="Column which identifies the stereoisomers."
-    )
-    y_cols: List[str] = Field(..., description="List of columns for bioactivities.")
-    threshold: float = Field(
-        default=2.0,
-        description=" Threshold to identify the activity cliff. Currently, the difference of zscores between isomers are used for identification.",
-    )
-    prefix: str = Field(default="AC_", description="Prefix for the adding columns.")
-    mol_col: str = Field(default="MOL_smiles", description="Column for molecule strings.")
     name: Literal["ac_stereoisomer"] = "ac_stereoisomer"
+    prefix: str = "AC_"
+
+    stereoisomer_id_col: str = "MOL_molhash_id_no_stereo"
+    y_cols: List[str] = Field(default_factory=list)
+    threshold: float = 2.0
+    mol_col: Optional[str] = "MOL_smiles"
 
     def transform(
         self,
@@ -93,6 +95,11 @@ class StereoIsomerACDetection(BaseAction):
             prefix=self.prefix,
         )
 
+        # Log the following information to the report:
+        # - Newly added columns
+        # - Number of activity cliffs found
+        # - Image of the activity cliffs
+
         if report is not None:
             for col in self.y_cols:
                 col_with_prefix = self.get_column_name(col)
@@ -106,13 +113,14 @@ class StereoIsomerACDetection(BaseAction):
                         f"Found {num_cliff} activity cliffs among stereoisomers "
                         f"with respect to the {col} column."
                     )
-                    to_plot = dataset.loc[has_cliff, self.mol_col]
-                    legends = (col + dataset.loc[has_cliff, col].astype(str)).tolist()
 
-                    image = dm.to_image([dm.to_mol(s) for s in to_plot], legends=legends, use_svg=False)
-                    report.log_image(
-                        image_or_figure=image, title="Detection of activity shifts among stereoisomers"
-                    )
+                    if self.mol_col is not None:
+                        to_plot = dataset.loc[has_cliff, self.mol_col]
+                        legends = (col + dataset.loc[has_cliff, col].astype(str)).tolist()
+                        image = dm.to_image([dm.to_mol(s) for s in to_plot], legends=legends, use_svg=False)
+                        report.log_image(
+                            image_or_figure=image, title="Detection of activity shifts among stereoisomers"
+                        )
 
                 else:
                     report.log(

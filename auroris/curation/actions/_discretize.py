@@ -1,5 +1,4 @@
 from typing import Dict, List, Literal, Optional, Union
-from pydantic import Field
 
 import numpy as np
 import pandas as pd
@@ -80,38 +79,25 @@ def discretize(
 class Discretization(BaseAction):
     """
     Thresholding bioactivity columns to binary or multiclass labels.
+
+    See [`auroris.curation.functional.discretize`][] for the docs of the
+    `thresholds`, `inplace`, `allow_nan` and `label_order` attributes
+
+    Attributes:
+        input_column: The column to discretize.
+        log_scale: Whether a visual depiction of the discretization should be on a log scale.
     """
 
-    input_column: str = Field(..., description="Column to be discretized.")
-    prefix: str = Field(default="CLS_", description="Prefix for added column names.")
-    thresholds: List[float] = Field(..., description="Interval boundaries that include the right bin edge.")
-    inplace: bool = Field(
-        default=False,
-        description="""Set to True to perform inplace discretization and avoid a copy
-            (if the input is already a numpy array or a scipy.sparse CSR / CSC
-            matrix and if axis is 1).""",
-    )
-    allow_nan: bool = Field(
-        default=True,
-        description="Set to True to allow nans in the array for discretization. Otherwise, an error will be raised instead.",
-    )
-    label_order: Literal["ascending", "descending"] = Field(
-        default="ascending",
-        description="""The continuous values are discretized to labels 0, 1, 2, .., N with respect to given
-            threshold bins [threshold_1, threshold_2,.., threshould_n].
-            When set to 'ascending', the class label is in ascending order with the threshold
-            bins that `0` represents negative class or lower class, while 1, 2, 3 are for higher classes.
-            When set to 'descending' the class label is in ascending order with the threshold bins.
-            Sometimes the positive labels are on the left side of provided threshold.
-            E.g. For binarization with threshold [0.5],  the positive label is defined
-            by`X < 0.5`. In this case, `label_order` should be `descending`.""",
-    )
-    log_scale: bool = Field(
-        default=False,
-        description="""Whether visualize distribution in log scale.
-                   See more in <auroris.visualization.visualize_continuous_distribution>""",
-    )
     name: Literal["discretize"] = "discretize"
+    prefix: str = "CLS_"
+
+    input_column: str
+    thresholds: List[float]
+
+    inplace: bool = False
+    allow_nan: bool = True
+    label_order: Literal["ascending", "descending"] = "ascending"
+    log_scale: bool = False
 
     def transform(
         self,

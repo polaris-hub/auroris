@@ -1,6 +1,7 @@
-from typing import Dict, List, Optional, Sequence, Literal
-from pydantic import Field
+from typing import Dict, List, Literal, Optional, Sequence
+
 import pandas as pd
+from loguru import logger
 
 from auroris.curation.actions._base import BaseAction
 from auroris.report import CurationReport
@@ -10,17 +11,20 @@ from auroris.visualization import visualize_continuous_distribution
 
 class ContinuousDistributionVisualization(BaseAction):
     """
-    Visualize a continuous distribution.
+    Visualize one or more continuous distribution(s).
+
+    See [`auroris.visualization.visualize_continuous_distribution`][] for the docs of the
+    `log_scale` and `bins` attributes
+
+    Attributes:
+        y_cols: The columns whose distributions should be visualized.
     """
 
-    y_cols: Optional[List[str]] = Field(
-        default=None, description="List of columns for bioactivity for visualization."
-    )
-    log_scale: bool = Field(default=False, description="Whether visualize distribution in log scale.")
-    bins: Optional[Sequence[float]] = Field(
-        default=None, description="The bin boundaries to color the area under the KDE curve."
-    )
     name: Literal["distribution"] = "distribution"
+
+    y_cols: List[str]
+    log_scale: bool = False
+    bins: Optional[Sequence[float]] = None
 
     def transform(
         self,
@@ -29,6 +33,9 @@ class ContinuousDistributionVisualization(BaseAction):
         verbosity: VerbosityLevel = VerbosityLevel.NORMAL,
         parallelized_kwargs: Optional[Dict] = None,
     ):
+        if report is None:
+            logger.warning("No report provided. Skipping visualization.")
+
         if report is not None:
             for y_col in self.y_cols:
                 fig = visualize_continuous_distribution(

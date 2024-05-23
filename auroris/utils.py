@@ -1,12 +1,12 @@
 from io import BytesIO
 from typing import ByteString
+
 import fsspec
-import pyarrow.parquet as pq
 import numpy as np
+import pyarrow.parquet as pq
 from matplotlib.figure import Figure
 from PIL import Image
 from PIL.Image import Image as ImageType
-
 from sklearn.utils.multiclass import type_of_target
 
 
@@ -42,18 +42,18 @@ def img2bytes(image: ImageType):
 def bytes2img(image_bytes: ByteString):
     """Convert bytes to PIL image"""
     image_stream = BytesIO(image_bytes)
-    # Open the image using PIL
     image = Image.open(image_stream)
     return image
 
 
 def save_image(image: ImageType, path: str):
+    """Save an image to a fsspec-compatible path"""
     with fsspec.open(path, "wb") as fd:
         image.save(fd, format="png")
 
 
 def is_parquet_file(path):
-    """Verify parquet file"""
+    """Verify parquet file without actually loading it."""
     try:
         pq.read_schema(path)
         return True
