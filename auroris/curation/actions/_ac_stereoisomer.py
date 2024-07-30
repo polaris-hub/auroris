@@ -121,7 +121,7 @@ class StereoIsomerACDetection(BaseAction):
                         to_plot["mol_index"] = to_plot["mol_index"].astype(int).astype(str)
                         legends = (
                             to_plot[["mol_index", col]]
-                            .apply(lambda x: f"mol_index: {x["mol_index"]}\n{col}: {str(x[col])}", axis=1)
+                            .apply(lambda x: f"mol_index: {x['mol_index']}\n{col}: {str(x[col])}", axis=1)
                             .tolist()
                         )
                         report.log(f"The molecule index are : {' ,'.join(to_plot["mol_index"].tolist())}")
