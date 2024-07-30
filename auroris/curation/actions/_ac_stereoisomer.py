@@ -31,9 +31,7 @@ def detect_streoisomer_activity_cliff(
     """
     dataset_ori = dataset.copy(deep=True)
     ac_cols = {y_col: [] for y_col in y_cols}
-    group_index_list = np.array(
-        [group.index.values for _, group in dataset.groupby(stereoisomer_id_col, sort=False)]
-    )
+    group_index_list = [group.index.values for _, group in dataset.groupby(stereoisomer_id_col, sort=False)]
     for y_col in y_cols:
         is_reg = is_regression(dataset[y_col].dropna().values)
         if is_reg:
@@ -50,11 +48,11 @@ def detect_streoisomer_activity_cliff(
                     ac = (np.nanmax(zscores) - np.nanmin(zscores)) > threshold
                 else:
                     # For classification, we use the number of unique classes
-                    ac = len(np.unique(group[y_col].values)) > 1
+                    ac = len(np.unique(group[y_col].dropna().values)) > 1
             ac_cols[y_col].extend([ac] * len(group))
 
     for y_col in y_cols:
-        rows = group_index_list.flatten()
+        rows = [ind for ind_list in group_index_list for ind in ind_list]
         dataset_ori.loc[rows, f"{prefix}{y_col}"] = np.array(ac_cols[y_col]).astype(bool)
 
     return dataset_ori
@@ -115,11 +113,24 @@ class StereoIsomerACDetection(BaseAction):
                     )
 
                     if self.mol_col is not None:
-                        to_plot = dataset.loc[has_cliff, self.mol_col]
-                        legends = (col + dataset.loc[has_cliff, col].astype(str)).tolist()
-                        image = dm.to_image([dm.to_mol(s) for s in to_plot], legends=legends, use_svg=False)
+                        to_plot = (
+                            dataset.sort_values(by=self.stereoisomer_id_col)
+                            .loc[has_cliff, [self.mol_col, col]]
+                            .reset_index(names=["mol_index"])
+                        )
+                        to_plot["mol_index"] = to_plot["mol_index"].astype(int).astype(str)
+                        legends = (
+                            to_plot[["mol_index", col]]
+                            .apply(lambda x: f"mol_index: {x["mol_index"]}\n{col}: {str(x[col])}", axis=1)
+                            .tolist()
+                        )
+                        report.log(f"The molecule index are : {' ,'.join(to_plot["mol_index"].tolist())}")
+                        image = dm.to_image(
+                            to_plot[self.mol_col].values, legends=legends, use_svg=False, returnPNG=True
+                        ).data
+
                         report.log_image(
-                            image_or_figure=image, title="Detection of activity shifts among stereoisomers"
+                            image_or_figure=image, title=f"Activity shifts among stereoisomers  - {col}"
                         )
 
                 else:
