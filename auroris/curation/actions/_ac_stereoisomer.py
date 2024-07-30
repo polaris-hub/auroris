@@ -124,7 +124,7 @@ class StereoIsomerACDetection(BaseAction):
                             .apply(lambda x: f"mol_index: {x['mol_index']}\n{col}: {str(x[col])}", axis=1)
                             .tolist()
                         )
-                        report.log(f"The molecule index are : {' ,'.join(to_plot["mol_index"].tolist())}")
+                        report.log(f"The molecule index are : {' ,'.join(to_plot['mol_index'].tolist())}")
                         image = dm.to_image(
                             to_plot[self.mol_col].values, legends=legends, use_svg=False, returnPNG=True
                         ).data
