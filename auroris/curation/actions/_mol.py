@@ -10,14 +10,13 @@ from auroris.curation.actions._base import BaseAction
 from auroris.report import CurationReport
 from auroris.types import VerbosityLevel
 from auroris.visualization import visualize_chemspace
-from auroris.visualization.utils import create_figure
 
 
 def curate_molecules(
     mols: List[Union[str, dm.Mol]],
     progress: bool = True,
-    remove_salt_solvent: bool = True,
     remove_stereo: bool = False,
+    fix_mol: bool = True,
     count_stereoisomers: bool = True,
     count_stereocenters: bool = True,
     **parallelized_kwargs,
@@ -28,7 +27,7 @@ def curate_molecules(
     Args:
         mols: List of molecules.
         progress: Whether show curation progress.
-        remove_salt_solvent: Whether remove salt and solvent from molecule.
+        fix_mol: Whether fix the error in molecule.
         remove_stereo: Whether remove stereo chemistry information from molecule.
         count_stereoisomers: Whether count the number of stereoisomers of molecule.
         count_stereocenters: Whether count the number of stereocenters of molecule.
@@ -40,8 +39,8 @@ def curate_molecules(
     """
     fn = partial(
         _curate_molecule,
-        remove_salt_solvent=remove_salt_solvent,
         remove_stereo=remove_stereo,
+        fix_mol=fix_mol,
         count_stereoisomers=count_stereoisomers,
         count_stereocenters=count_stereocenters,
     )
@@ -59,44 +58,31 @@ def curate_molecules(
     return mol_dict, num_invalid
 
 
-def _standardize_mol(mol: Union[dm.Mol, str], remove_salt_solvent: bool = True, remove_stereo: bool = False):
+def _standardize_mol(mol: Union[dm.Mol, str], remove_stereo: bool = False, fix_mol: bool = False):
     """
     Standardize the molecular structure
     """
-
+    # convert mol object
     mol = dm.to_mol(mol)
 
-    # fix mol
-    mol = dm.fix_mol(mol)
+    # fix error in molecule using a greedy approach.
+    if fix_mol:
+        mol = dm.fix_mol(mol)
 
-    # sanitize molecule
-    mol = dm.sanitize_mol(mol, sanifix=True, charge_neutral=False)
-
-    if remove_salt_solvent:
-        # standardize here to ensure the success the substructure matching for
-        mol = dm.standardize_mol(
-            mol=mol,
-            disconnect_metals=False,
-            reionize=True,
-            normalize=True,
-            uncharge=False,
-            stereo=not remove_stereo,
-        )
-        # remove salts
-        # but don't remove everything if the molecule is salt or solvent itself
-        mol = dm.remove_salts_solvents(mol, dont_remove_everything=True)
+    # keep only the largest fragment, remove salt, metal etc.
+    mol = dm.keep_largest_fragment(mol)
 
     # remove stereochemistry information
     if remove_stereo:
         mol = dm.remove_stereochemistry(mol)
 
-    # standardize
+    # standardize with/without stereochemistry information (tautomeric, protomeric forms)
     mol = dm.standardize_mol(
         mol=mol,
         disconnect_metals=False,
         reionize=True,
         normalize=True,
-        uncharge=False,
+        uncharge=True,  # standardize for protomeric forms
         stereo=not remove_stereo,
     )
 
@@ -105,8 +91,8 @@ def _standardize_mol(mol: Union[dm.Mol, str], remove_salt_solvent: bool = True, 
 
 def _curate_molecule(
     mol: Union[dm.Mol, str],
-    remove_salt_solvent: bool = True,
     remove_stereo: bool = False,
+    fix_mol: bool = False,
     count_stereoisomers: bool = True,
     count_stereocenters: bool = True,
 ) -> dict:
@@ -116,6 +102,9 @@ def _curate_molecule(
 
     Args:
         mol: Molecule
+        remove_stero: Whether remove stereochemistry information from molecule
+        count_stereoisomers: Whether count number of stereoisomers
+        count_stereocenters: Whether count number of stereocenters
 
     Returns:
         mol_dict: Dictionary with the curated molecule and additional metadata
@@ -123,7 +112,7 @@ def _curate_molecule(
 
     with dm.without_rdkit_log():
         try:
-            mol = _standardize_mol(mol, remove_salt_solvent=remove_salt_solvent, remove_stereo=remove_stereo)
+            mol = _standardize_mol(mol, remove_stereo=remove_stereo, fix_mol=fix_mol)
         except Exception:
             # The molecule could not be preprocessed. We assume it's an invalid molecule and return an empty dict
             return _get_mol_dict()
@@ -234,7 +223,7 @@ class MoleculeCuration(BaseAction):
     Automated molecule curation and chemistry space distribution.
 
     See [`auroris.curation.functional.curate_molecules`][] for the docs of the
-    `remove_salt_solvent`, `remove_stereo`, `count_stereoisomers`, and `count_stereocenters` attributes
+    `remove_stereo`, `fix_mol`, `count_stereoisomers`, and `count_stereocenters` attributes
 
     Attributes:
         input_column: The name of the column that has the molecules (either `dm.Mol` objects or SMILES).
@@ -246,8 +235,8 @@ class MoleculeCuration(BaseAction):
     prefix: str = "MOL_"
 
     input_column: str
-    remove_salt_solvent: bool = True
     remove_stereo: bool = False
+    fix_mol: bool = False
     count_stereoisomers: bool = True
     count_stereocenters: bool = True
 
@@ -267,8 +256,8 @@ class MoleculeCuration(BaseAction):
         mol_dict, num_invalid = curate_molecules(
             mols,
             progress=verbosity > 1,
-            remove_salt_solvent=self.remove_salt_solvent,
             remove_stereo=self.remove_stereo,
+            fix_mol=self.fix_mol,
             count_stereoisomers=self.count_stereoisomers,
             count_stereocenters=self.count_stereocenters,
             **parallelized_kwargs,
@@ -313,7 +302,7 @@ class MoleculeCuration(BaseAction):
                 undefined_col = self.get_column_name("num_undefined_stereo_center")
                 defined_col = self.get_column_name("num_defined_stereo_center")
 
-                to_plot = dataset.query(f"{undefined_col} > 0 ")
+                to_plot = dataset.query(f"{undefined_col} > 0")
                 num_mol_undefined = to_plot.shape[0]
                 report.log(f"Molecules with undefined stereocenter detected: {num_mol_undefined}.")
 
@@ -324,10 +313,9 @@ class MoleculeCuration(BaseAction):
                         defined = row[defined_col]
                         legends.append(f"Undefined:{undefined}\n Definded:{defined}")
 
-                    with create_figure(n_plots=1, n_cols=1) as (image, _):
-                        dm.to_image(
-                            to_plot[smiles_col].tolist(), legends=legends, use_svg=False, returnPNG=True
-                        )
+                    image = dm.to_image(
+                        to_plot[smiles_col].values, legends=legends, use_svg=False, returnPNG=True
+                    ).data
 
                     report.log_image(
                         image,

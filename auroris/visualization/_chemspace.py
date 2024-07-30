@@ -1,4 +1,4 @@
-from typing import Any, List, Optional, Union
+from typing import List, Optional, Union
 
 import numpy as np
 import seaborn as sns
@@ -20,7 +20,8 @@ def visualize_chemspace(
     w_h_ratio: float = 0.5,
     dpi: int = 150,
     seaborn_theme: Optional[str] = "whitegrid",
-    **umap_kwargs: Any,
+    plot_kwargs: dict = None,
+    umap_kwargs: dict = None,
 ):
     """Plot the coverage in chemical space. Also, color based on the target values.
 
@@ -33,11 +34,18 @@ def visualize_chemspace(
         w_h_ratio: Width/height ratio.
         dpi: DPI value of the figure.
         seaborn_theme: Seaborn theme.
-        **umap_kwargs: Keyword arguments for the UMAP algorithm.
+        plot_kwargs: seaborn plot arguments.
+        umap_kwargs: Keyword arguments for the UMAP algorithm.
     """
 
     if umap is None:
         raise ImportError("Please run `pip install umap-learn` to use UMAP visualizations for the chemspace.")
+
+    if umap_kwargs is None:
+        umap_kwargs = {}
+
+    if plot_kwargs is None:
+        plot_kwargs = {}
 
     if isinstance(y, np.ndarray):
         y = [y]
@@ -68,6 +76,7 @@ def visualize_chemspace(
                 y=umap_1,
                 hue=y_i,
                 ax=axes[idx],
+                **plot_kwargs,
             )
             ax.set_xlabel("Component 0")
             ax.set_xlabel("Component 1")
