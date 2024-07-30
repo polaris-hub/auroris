@@ -120,7 +120,7 @@ class Discretization(BaseAction):
             log_scale=self.log_scale,
             bins=self.thresholds,
         )
-        report.log_image(fig, title=self.input_column)
+        report.log_image(fig, title=f"Data distribution - {self.input_column}")
 
         column_name = self.get_column_name(self.input_column)
         dataset[column_name] = X
