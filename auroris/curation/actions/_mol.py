@@ -236,7 +236,7 @@ class MoleculeCuration(BaseAction):
 
     input_column: str
     remove_stereo: bool = False
-    fix_mol:bool = False
+    fix_mol: bool = False
     count_stereoisomers: bool = True
     count_stereocenters: bool = True
 
