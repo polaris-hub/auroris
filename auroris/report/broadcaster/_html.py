@@ -67,7 +67,7 @@ class HTMLBroadcaster(ReportBroadcaster):
                 else:
                     # Save as separate file
                     # add image title to the file name. (Replace space, slash, dot by hyphen)
-                    filename = re.sub(r"[ ./]", "_", image.title) if image.title else ""
+                    filename = re.sub(r"\ \-\ |[ ./]", "_", image.title) if image.title else ""
                     filename = "-".join([str(image_counter), filename])
                     path = dm.fs.join(self._image_dir, f"{filename}.png")
                     save_image(image.image, path)
