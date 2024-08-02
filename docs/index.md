@@ -15,7 +15,8 @@ Currently, Auroris supports curation for small molecules, with plans to extend t
 - 🏷️ Detection of Duplicate Molecules with Contradictory Labels: Identifies and resolves inconsistencies in activity data for each molecule.
 
 - ⛰️ Detection of Activity Cliffs Between Stereoisomers: Identifies significant differences in activity between stereoisomers.
-🔍Outlier Detection and Visualization: Detects and visualizes outliers in molecular activity data.
+
+- 🔍Outlier Detection and Visualization: Detects and visualizes outliers in molecular activity data.
 
 - 📽️ Visualization of Molecular Distribution in Chemical Space: Provides graphical representations of molecular distributions.
 
