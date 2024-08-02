@@ -6,7 +6,22 @@ Welcome to the Auroris - Simplifying Drug Discovery Data Curation
 
 ## What is Auroris?
 
-Auroris is a comprehensive Python library designed to assist researchers and scientists in managing, cleaning, and preparing data relevant to drug discovery. Our mission is to implement a range of techniques to handle, transform, filter, analyze, or visualize the diverse data types commonly encountered in drug discovery.
+Auroris is a Python library designed to assist researchers and scientists in managing, cleaning, and preparing data relevant to drug discovery. Auroris will implement a range of techniques to handle, transform, filter, analyze, or visualize the diverse data types commonly encountered in drug discovery. 
+
+Currently, Auroris supports curation for small molecules, with plans to extend to other modalities in drug discovery. The curation module for small molecules includes:
+
+- 🗄️ Molecule Standardization: Ensures that each molecule is represented in a uniform and unambiguous form.
+
+- 🏷️ Detection of Duplicate Molecules with Contradictory Labels: Identifies and resolves inconsistencies in activity data for each molecule.
+
+- ⛰️ Detection of Activity Cliffs Between Stereoisomers: Identifies significant differences in activity between stereoisomers.
+🔍Outlier Detection and Visualization: Detects and visualizes outliers in molecular activity data.
+
+- 📽️ Visualization of Molecular Distribution in Chemical Space: Provides graphical representations of molecular distributions.
+
+Reproducibility and transparency are core to the mission of Polaris. That’s why with Auroris, you can also automatically generate detailed reports summarizing the changes that happened to a dataset during curation. Through an intuitive API, you can easily define complex curation workflows. Once defined, that workflow is serializable and thus reproducible so you can transparently share how you curated the dataset.
+ 
+
 
 
 ## Where to next?
