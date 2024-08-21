@@ -31,7 +31,11 @@ def add_3d_coord(mol: dm.Mol):
 
 
 def evaluate(
-    data_test: pd.DataFrame, transformer: Callable, model: RandomForestClassifier, mol_col: str, val_col: str
+    data_test: pd.DataFrame,
+    transformer: Callable,
+    model: RandomForestClassifier,
+    mol_col: str,
+    val_col: str,
 ):
     """Evaluate on test set with classification metrics"""
     X_test = transformer(data_test[mol_col].values)
