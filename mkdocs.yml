@@ -17,6 +17,7 @@ nav:
       - Auroris: index.md
   - Tutorials:
       - Getting Started: tutorials/getting_started.ipynb
+      - Stereoisomerism_QSAR: tutorials/stereoisomerism_QSAR.ipynb
   - API Reference:
       - Core: 
         - Curator: api/curator.md
