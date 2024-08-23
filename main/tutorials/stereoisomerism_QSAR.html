@@ -13,6 +13,10 @@
         <link rel="canonical" href="https://github.com/polaris-hub/auroris/main/tutorials/stereoisomerism_QSAR.html">
       
       
+        <link rel="prev" href="getting_started.html">
+      
+      
+        <link rel="next" href="../api/curator.html">
       
       
       <link rel="icon" href="../images/logo-black.svg">
@@ -218,10 +222,12 @@
         
   
   
+    
+  
   
     
     
-      <li class="md-tabs__item">
+      <li class="md-tabs__item md-tabs__item--active">
         <a href="getting_started.html" class="md-tabs__link">
           
   
@@ -410,25 +416,30 @@
       
   
   
+    
   
   
+  
     
     
     
+      
+        
+        
       
       
         
       
     
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
         
           
-          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
             
   
   <span class="md-ellipsis">
@@ -439,7 +450,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_2">
             <span class="md-nav__icon md-icon"></span>
             Tutorials
@@ -462,6 +473,202 @@
   
 
       </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    Impacts of stereochemistry and activity cliffs in quantitative structure-activity relationships (QSAR) models
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="stereoisomerism_QSAR.html" class="md-nav__link md-nav__link--active">
+        
+  
+  <span class="md-ellipsis">
+    Impacts of stereochemistry and activity cliffs in quantitative structure-activity relationships (QSAR) models
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#stereoisomerization" class="md-nav__link">
+    <span class="md-ellipsis">
+      Stereoisomerization
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Stereoisomerization">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#optical-isomerism" class="md-nav__link">
+    <span class="md-ellipsis">
+      Optical isomerism
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ez-stereisomerism" class="md-nav__link">
+    <span class="md-ellipsis">
+      E/Z Stereisomerism
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#is-stereochemistry-always-important-in-qsar" class="md-nav__link">
+    <span class="md-ellipsis">
+      Is stereochemistry always important in QSAR?
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#stereisomers-with-activity-cliff-and-the-impact-on-qsar" class="md-nav__link">
+    <span class="md-ellipsis">
+      Stereisomers with activity cliff and the impact on QSAR
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Stereisomers with activity cliff and the impact on QSAR">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#choice-of-molecular-representations-for-stereoisomerism" class="md-nav__link">
+    <span class="md-ellipsis">
+      Choice of molecular representations for stereoisomerism
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#qsar-modeling-with-stereoisomers-exhibiting-activity-cliffs" class="md-nav__link">
+    <span class="md-ellipsis">
+      QSAR modeling with stereoisomers exhibiting activity cliffs
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="QSAR modeling with stereoisomers exhibiting activity cliffs">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#example-case-dopamine-receptor-d2" class="md-nav__link">
+    <span class="md-ellipsis">
+      Example case: Dopamine receptor D2
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#training-with-simple-randomforest-model" class="md-nav__link">
+    <span class="md-ellipsis">
+      Training with simple RandomForest model
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#compare-the-predictive-performance-on-test-set" class="md-nav__link">
+    <span class="md-ellipsis">
+      Compare the predictive performance on test set
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#overall-performance-on-entire-test-set" class="md-nav__link">
+    <span class="md-ellipsis">
+      Overall performance on entire test set
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#performance-on-stereoisomers-which-show-activity-cliff" class="md-nav__link">
+    <span class="md-ellipsis">
+      Performance on stereoisomers which show activity cliff
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#final-notes" class="md-nav__link">
+    <span class="md-ellipsis">
+      Final notes
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -4292,6 +4499,44 @@ The results above demonstrate that, while the model trained with <code>pharm3D-c
       
         <footer class="md-footer">
   
+    
+      
+      <nav class="md-footer__inner md-grid" aria-label="Footer" >
+        
+          
+          <a href="getting_started.html" class="md-footer__link md-footer__link--prev" aria-label="Previous: Getting Started">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              <div class="md-ellipsis">
+                Getting Started
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../api/curator.html" class="md-footer__link md-footer__link--next" aria-label="Next: Curator">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              <div class="md-ellipsis">
+                Curator
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4Z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
     
   
   <div class="md-footer-meta md-typeset">
