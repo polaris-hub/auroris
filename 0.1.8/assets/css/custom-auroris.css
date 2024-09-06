@@ -1,0 +1,32 @@
+:root {
+
+  /*
+  For a list of all available variables, see
+  https://github.com/squidfunk/mkdocs-material/blob/master/src/assets/stylesheets/main/_colors.scss
+  */
+  --auroris-primary:    rgb(36, 82, 97);
+  --auroris-secondary: rgb(70, 201, 190);
+  --auroris-ternary: rgb(0, 61, 94);
+}
+
+/* Change the header background to use a gradient */
+.md-header {
+  background-image: linear-gradient(to right, var(--auroris-secondary), var(--auroris-primary));
+}
+
+/* Change the footer background to use a gradient */
+.md-footer {
+  background-image: linear-gradient(to right, var(--auroris-primary), var(--auroris-ternary));
+}
+
+/* Change the tabs background to use a gradient */
+.md-tabs {
+  background-image: linear-gradient(to right, #F4F6F9, #d7f2c3);
+  color: var(--auroris-ternary);
+}
+
+/* Remove the `In` and `Out` block in rendered Jupyter notebooks */
+.md-container .jp-Cell-outputWrapper .jp-OutputPrompt.jp-OutputArea-prompt,
+.md-container .jp-Cell-inputWrapper .jp-InputPrompt.jp-InputArea-prompt {
+  display: none !important;
+}
